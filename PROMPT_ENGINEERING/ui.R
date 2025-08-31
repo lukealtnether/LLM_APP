@@ -19,14 +19,14 @@ prompt_ui <-  fluidPage(
     
     fluidRow(
       column(
-        width = 8,
+        width = 6,
         fluidRow(
           column(6, fileInput(("json_file"), "Upload JSON Schema (.json)")),
           column(6, uiOutput("example_file_ui"))
         ),
         tags$hr(),
         fluidRow(
-          column(2, textInput(("id_column"), label = list("ID Column",
+          column(4, textInput(("id_column"), label = list("ID Column",
             bsButton("id_info", label = "",
               icon = icon("info", lib = "font-awesome"),
               style = "default", size = "extra-small")
@@ -41,7 +41,7 @@ prompt_ui <-  fluidPage(
             "right", trigger = "click",
             options = list(container = "body")
           ),
-          column(3, textInput(("llm_context"), label = list("Context window",
+          column(4, textInput(("llm_context"), label = list("Context window",
             bsButton("context_info", label = "",
               icon = icon("info", lib = "font-awesome"),
               style = "default", size = "extra-small")
@@ -59,25 +59,20 @@ prompt_ui <-  fluidPage(
           column(2, uiOutput(("word_count_info")))
         ),
         fluidRow(
-          column(2, textInput(("llm_address"), "IP Address", value = "172.18.227.")),
-          column(3, selectInput(("llm_model"), "Model", choices = c("Need to specify IP address first")))
+          column(3, textInput(("llm_address"), "IP Address", value = "172.18.227.86")),
+          column(5, selectInput(("llm_model"), "Model", choices = c("Need to specify IP address first")))
         )
       ),
       
       column(
-        width = 4,
-        column(width = 6,
-          h4("Average time"),
-          verbatimTextOutput(("avg_time")),
-          h4("Observations"),
+        width = 6,
+        column(width = 4,
+          h4("Overall Statistics"),
           tableOutput(("obs_acc"))),
-        column(width = 6,
-          h4("Variable Accuracy"),
-          tableOutput(("prop_acc")),
-          h4("Total Accuracy"),
-          verbatimTextOutput(("total_accuracy"))
+        column(width = 8,
+          h4("Variable Statistics"),
+          tableOutput(("prop_acc"))
           )
-        
       )
     ),
     
