@@ -35,7 +35,7 @@ prompt_ui <-  fluidPage(
           bsPopover("id_info", "More Information", 
             content = HTML(paste("Only applicable for <b>array</b> schema.",
               "For analysis, within each example, <b>objects</b> must be compared by an id column.",
-              "<b>Objects</b> will otherwise be compared by row order- which may be different from the key to the llm output."
+              "<b>Objects</b> will otherwise be compared by row order- which may be different from the ground truth to the llm output."
             )
             ),
             "right", trigger = "click",
@@ -67,11 +67,44 @@ prompt_ui <-  fluidPage(
       column(
         width = 6,
         column(width = 4,
-          h4("Overall Statistics"),
+          h4(list("Overall Statistics",
+            bsButton("o_stat_info", label = "",
+              icon = icon("info", lib = "font-awesome"),
+              style = "default", size = "extra-small")
+            )),
           tableOutput(("obs_acc"))),
         column(width = 8,
-          h4("Variable Statistics"),
-          tableOutput(("prop_acc"))
+          h4(list("Variable Statistics",
+            bsButton("v_stat_info", label = "",
+              icon = icon("info", lib = "font-awesome"),
+              style = "default", size = "extra-small")
+            )),
+          tableOutput(("prop_acc")),
+          bsPopover("o_stat_info", "More Information", 
+            content = HTML(paste("Context window is the working memory of the LLM.",
+              "Basic overall statics evaulating the prompt. <b>Objects</b> refer to schema bjects and can be through of rows in the database. ",
+              "<b>Halucinated</b> objects, refer to objects in the LLM response not present in the ground truth. <b>Omissions</b> are the opposite.",
+              "<b>Accuracy</b> is defined by the formula (TP + TN) / (TP + TN + FP + FN) and is a good representation of how well the prompt is doing",
+              "from a completely balanced perspective (this is the only metric that rewards true negatives). <b>F1 Score</b> is defined by the formula 2TP / (2TP + FP +FN) and represents",
+              "the harmonic mean of precision and recall. F1 is a good metric for classification tasks where you want to identify prositive finidngs (ie: PE identification algoritm).",
+              "<b>Jaccard Similarity</b> is defined by the formula TP / (TP + FP + FN) and provides the overlap of the true positive LLM response to all positive data (in LLM response and groudn truth). Similar to accuracy",
+              "but only cares about positive or omitted information. TN are not factored and thus this metric is ideal for pure database creation. Of note, for all of these fomulas",
+              "hallucinations count as a FP in every property and omissions count as a FN in every property. However, for the variable metrics to the right, only shared objects are", 
+              "factored to truly asses each property."
+              
+            )
+            ),
+            "right", trigger = "click",
+            options = list(container = "body")
+          ),
+          bsPopover("v_stat_info", "More Information", 
+            content = HTML(paste("Stats are given for each object property. Formulas are the same as for the total statistics. However,",
+              "only shared objects are factored to give a better representation of each property decription."
+            )
+            ),
+            "right", trigger = "click",
+            options = list(container = "body")
+          ),
           )
       )
     ),
@@ -102,7 +135,7 @@ prompt_ui <-  fluidPage(
         verbatimTextOutput(("hallucinations_ex")),
         h4("LLM Output"),
         tableOutput(("llm_output")),
-        h4("Key"),
+        h4("Ground Truth"),
         tableOutput(("key_output"))
       )
     ),

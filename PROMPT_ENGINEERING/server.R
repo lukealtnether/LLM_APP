@@ -396,9 +396,9 @@ prompt_server <- function(input, output, session) {
 
     #display tables
     rv$summary_table <- data.frame(
-      Metric = c("Average Time", "LLM objects", "True objects", "Hallucinated objects", "Omitted objects", 
+      Metric = c("Average Time", "LLM objects", "True objects", "Hallucinated objects", "Omitted objects", "Compared objects",
         "Accuracy", "F1 Score", "Jaccard Similarity"),
-      Value = as.character(c(avg_time, llm_obs, key_obs, hallucinations, omissions, 
+      Value = as.character(c(avg_time, llm_obs, key_obs, hallucinations, omissions, shared_obs,
         total_accuracy, total_f1, total_jaccard)),
       stringsAsFactors = FALSE
     )
