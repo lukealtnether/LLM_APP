@@ -3,8 +3,6 @@ prompt_server <- function(input, output, session) {
   nested_coltypes <- reactiveVal()
   rv <- reactiveValues(test = NULL, df = NULL)
   
-  
-  
   output$example_file_ui <- renderUI({
     fileInput(("example_file"), "Upload Completed Examples (.xlsx)")
   })
@@ -88,45 +86,6 @@ prompt_server <- function(input, output, session) {
     }
     combined_tokens <- prompt_stats$tokens + example_stats$tokens
     tagList(tags$b("Estimated Tokens:"), sprintf(" %d", combined_tokens))
-  })
-  
-  
-  output$download_prompt <- downloadHandler(
-    filename = function() {
-      fname <- input$filename_prompt
-      if (is.null(fname) || fname == "") {
-        fname <- "prompt"
-      }
-      paste0(fname, ".txt")
-    },
-    content = function(file) {
-      writeLines(collapsed_prompt(), file)
-    }
-  )
-  
-  output$avg_time <- renderText({
-    if (!is.null(rv$test)) {
-      time_col <- paste0(input$llm_model, "_time")
-      avg <- mean(rv$test[[time_col]], na.rm = TRUE)
-      paste0(round(avg, 2), " seconds")
-    } else {
-      ""  
-    }
-  })
-  
-  output$obs_acc <- renderTable({
-    req(rv$summary_table)
-    rv$summary_table
-  }, rownames = FALSE, striped = FALSE, hover = TRUE)
-  
-  output$prop_acc <- renderTable({
-    req(rv$variable_summary)
-    rv$variable_summary
-  }, rownames = FALSE, striped = FALSE, hover = TRUE)
-  
-  output$total_accuracy <- renderPrint({
-    req(rv$total_accuracy)
-    cat(paste0(rv$total_accuracy, "%\n"))
   })
   
   observeEvent(input$submit_query, {
@@ -244,37 +203,44 @@ prompt_server <- function(input, output, session) {
     
     ##For shuffling through individual examples
     # ------------------------------------------------------------------------------
-    
-    results <- pmap(
-      list(test$data, test[[llm_model]]),
-      function(key_filtered, llm_run_filtered) {
-        comp <- comparedf(llm_run_filtered, key_filtered, by = id_column, int.as.num = TRUE)
-        
-        diffs_df <- diffs(comp) %>%
-          select(-row.x, -row.y, -var.x) %>%
-          rename(
-            variable = var.y, 
-            llm = values.x,
-            key = values.y
-          ) %>%
-          select(all_of(id_column), everything())
-        
-        hallucinations_count <- nrow(comp$frame.summary$unique[[1]])
-        omissions_count <- nrow(comp$frame.summary$unique[[2]])
-        
-        list(
-          differences = diffs_df,
-          hallucinations = hallucinations_count,
-          omissions = omissions_count
-        )
-      }
-    )
-    
-    # Add new columns to complete_df
-    test$differences     <- map(results, "differences")
-    test$hallucinations  <- map_int(results, "hallucinations")  
-    test$omissions       <- map_int(results, "omissions")
-    
+    # 
+    # results <- pmap(
+    #   list(test$data, test[[llm_model]]),
+    #   function(key_filtered, llm_run_filtered) {
+    #     comp <- comparedf(llm_run_filtered, key_filtered, by = id_column, int.as.num = TRUE)
+    #     
+    #     diffs_df <- diffs(comp) %>%
+    #       select(-row.x, -row.y, -var.x) %>%
+    #       rename(
+    #         variable = var.y, 
+    #         llm = values.x,
+    #         key = values.y
+    #       ) %>%
+    #       select(any_of(id_column), everything())
+    #     
+    #     hal_df <- comp$frame.summary$unique[[1]] %>%
+    #       filter(!if_any(-observation, is.na))
+    #     
+    #     omi_df <- comp$frame.summary$unique[[2]] %>%
+    #       filter(!if_any(-observation, is.na))
+    #       
+    #     hallucinations_count <- nrow(hal_df) 
+    #       
+    #     omissions_count <- nrow(omi_df)
+    # 
+    #     list(
+    #       differences = diffs_df,
+    #       hallucinations = hallucinations_count,
+    #       omissions = omissions_count
+    #     )
+    #   }
+    # )
+    # 
+    # # Add new columns to complete_df
+    # test$differences     <- map(results, "differences")
+    # test$hallucinations  <- map_int(results, "hallucinations")
+    # test$omissions       <- map_int(results, "omissions")
+
     # ------------------------------------------------------------------------------
     
     comparison <- comparedf(llm_run_filtered, key_filtered, by = by_vars, int.as.num = TRUE)
@@ -295,8 +261,33 @@ prompt_server <- function(input, output, session) {
     #df of differences by values
     diff_details <- diffs(comparison) 
     
+    # ------------------------------------------------------------------------------
+    # new differences logic
     
+    diff_merge <- diff_details %>%
+      select( by_vars, var.x, values.x, values.y) %>%
+      rename("Variable" = var.x,
+        "LLM" = values.x,
+        "Ground Truth"= values.y) %>%
+      nest(diff = any_of(c(id_col, "Variable", "LLM", "Ground Truth")))
     
+    hal_id <- hallucinations_df %>%
+      select(!any_of(c("observation", id_col))) %>%
+      mutate(H = 1)
+    
+    omi_id <- omissions_df %>%
+      select(!any_of(c("observation", id_col))) %>%
+      mutate(O = 1)
+    
+    test <- left_join(test, diff_merge, by = input_text_column)
+    test <- left_join(test, hal_id, by = input_text_column) %>%
+      mutate(H = if_else(is.na(H), 0, H))
+    test <- left_join(test, omi_id, by = input_text_column) %>%
+      mutate(O = if_else(is.na(O), 0, O))
+    
+    # ------------------------------------------------------------------------------
+    
+  
     #summary of fp and fn based on na in the diff details
     fp_fn_summary <- diff_details %>%
       mutate(
@@ -427,6 +418,28 @@ prompt_server <- function(input, output, session) {
     test()[example_index(), ]
   })
   
+  output$download_prompt <- downloadHandler(
+    filename = function() {
+      fname <- input$filename_prompt
+      if (is.null(fname) || fname == "") {
+        fname <- "prompt"
+      }
+      paste0(fname, ".txt")
+    },
+    content = function(file) {
+      writeLines(collapsed_prompt(), file)
+    })
+  
+  output$obs_acc <- renderTable({
+    req(rv$summary_table)
+    rv$summary_table
+  }, rownames = FALSE, striped = FALSE, hover = TRUE, align = "l")
+  
+  output$prop_acc <- renderTable({
+    req(rv$variable_summary)
+    rv$variable_summary
+  }, rownames = FALSE, striped = FALSE, hover = TRUE, align = "l")
+  
   output$example_check <- renderPrint({
     req(rv$test)
     idx <- example_index()
@@ -436,26 +449,26 @@ prompt_server <- function(input, output, session) {
   output$differences_df <- renderTable({
     req(rv$test)
     idx <- example_index()
-    diffs <- rv$test$differences[[idx]]
+    diffs <- rv$test$diff[[idx]]
     
-    if (is.null(diffs) || nrow(diffs) == 0) {
+    if (is.null(diff) || nrow(diff) == 0) {
       return(NULL)
     } else {
-      diffs
+      diff
     }
   }, striped = FALSE, hover = TRUE, bordered = TRUE, rownames = FALSE)
   
   output$omissssion_ex <- renderPrint({
     req(rv$test)
     idx <- example_index()
-    omissions <- rv$test$omissions[idx]
+    omissions <- rv$test$O[idx]
     cat("Omissions:", omissions, "\n")
   })
   
   output$hallucinations_ex <- renderPrint({
     req(rv$test)
     idx <- example_index()
-    halluc <- rv$test$hallucinations[idx]
+    halluc <- rv$test$H[idx]
     cat("Hallucinations:", halluc, "\n")
   })
   
