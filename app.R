@@ -30,6 +30,9 @@ source("JSON/server.R")
 # EXAMPLES app
 source("EXAMPLES/ui.R")      
 source("EXAMPLES/server.R")  
+# EXAMPLES app
+source("EXAMPLES ver2/ui.R")      
+source("EXAMPLES ver2/server.R")  
 
 # PROMPT ENGINEERING app
 source("PROMPT_ENGINEERING/ui.R")
@@ -102,8 +105,9 @@ ui <- navbarPage("",
     "))
                  ),
   tabPanel("HOME", homepage_ui),
-  tabPanel("Create Schema", json_ui),
-  tabPanel("Enter Example", examples_ui),
+  # tabPanel("Create Schema", json_ui),
+  tabPanel("Create Schema ver2", json_ui),
+  tabPanel("Enter Example", examples_ver2_ui),
   tabPanel("Engineer Prompt", prompt_ui),
   tabPanel("Create Database", random_ui ),
   tabPanel("Create Database ver2", run_ui),
@@ -113,7 +117,8 @@ ui <- navbarPage("",
 server <- function(input, output, session) {
   homepage_server(input, output, session)
   json_server(input, output, session)
-  examples_server(input, output, session)
+  # examples_server(input, output, session)
+  examples_ver2_server(input, output, session)
   prompt_server(input, output, session)
   random_server(input, output, session)
   run_server(input, output, session)
