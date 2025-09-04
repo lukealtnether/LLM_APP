@@ -273,26 +273,30 @@ After you submit each prompt you will be able to instantly asses the models perf
 to be analyzed to incrementally tweak the prompt to a high accuracy. An accuracy ~ 95% is generally 
 recommended for most purposes.
 
+##### Overall Statistics
+
   - Average time: The average time per inference will be displayed. As a general rule, the faster your 
   inference the more straightforward your task and prompt is. This can very widely based on GPU performance. 
   However, this is just another tool to analyze the methods. Prompts with identical accuracy can be chosen 
   based on inference time to improve efficiency.
   
-  - Observations: Essentially how many rows in the output database. For object schema this will be the 
-  number of examples, for arrays this can be any number. The number of hallucinated or omitted objects will 
+  - Objects: Referring to objects in the schema, how many total objects were extracted across all examples. The number of hallucinated or omitted objects will 
   also be displayed. Hallucinated objects are objects not present in the ground truth and omitted objects are 
   not present in the LLM output. Hallucinations and omissions generally apply for array schema only.
-  
-  - Variable accuracy: For each property the accuracy will be calculated according to the formula: 
-  `Variable accuracy = [(n correct values for a property) / (n observations in LLM output)] * 100`
-  Of note, omitted observations have no effect on the accuracy of an individual property. This is because when
-  the LLM decides not to include an object in an array there is now way to analyze the correctness of the 
-  hypothetical property. Further, the omission of an object is rarely due to the prompt of individual 
-  properties. 
   
   - Total Accuracy: For each prompt the total accuracy will be calculated according to the formula:
   `Total Accuracy = 100 - [(n incorrect values in the database) + (n omitted objects)(n properties)]/[n total data points in the ground truth]`
   The total accuracy of a prompt includes omissions.
+  
+##### Variable Statistics
+  
+  - Variable accuracy: For each property the accuracy will be calculated according to the formula: 
+  `Variable accuracy = [(TP + TN) / (P + N)] * 100`
+  Of note, omitted or hallucinated observations have no effect on the accuracy of an individual property. This is because when 
+  objects are hallucinated or omitted there is either no property to validate or no ground truth to validate against.
+  Further, the omission/hallucination of an object is rarely due to the prompt of individual properties. 
+  
+
   
 #### Download Prompt
 
