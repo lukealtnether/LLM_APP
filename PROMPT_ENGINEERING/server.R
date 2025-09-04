@@ -19,6 +19,14 @@ prompt_server <- function(input, output, session) {
     nested_colnames(names(first_nested))
   })
   
+  observe({
+    updateSelectInput(
+      session,
+      "id_column",
+      choices = c("None" = "", nested_colnames()),
+      selected = ""
+    )
+  })
   
   get_ollama_models <- function(ip) {
     url <- paste0("http://", ip, ":11434/api/tags")
@@ -201,7 +209,25 @@ prompt_server <- function(input, output, session) {
     
     llm_output <- llm_run_filtered %>%
       select(-all_of(by_vars))
+    # ------------------------------------------------------------------------------
     
+    comparison <- comparedf(llm_run_filtered, key_filtered, by = by_vars, int.as.num = TRUE)
+    
+    
+    #get a df of the true hallucinations/omission by filtering out non objects
+    hallucinations_df <- comparison$frame.summary$unique[[1]] %>%
+      filter(!if_any(-observation, is.na))
+    
+    omissions_df <- comparison$frame.summary$unique[[2]] %>%
+      filter(!if_any(-observation, is.na))
+    
+    #df of differences by each variable
+    total_differences <- diffs(comparison, by.var = TRUE) %>%
+      select(-var.x, -NAs) %>%
+      rename(variable = var.y) 
+    
+    #df of differences by values
+    diff_details <- diffs(comparison) 
    
     # ------------------------------------------------------------------------------
     # new differences logic

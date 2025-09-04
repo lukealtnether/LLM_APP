@@ -26,20 +26,33 @@ prompt_ui <-  fluidPage(
         ),
         tags$hr(),
         fluidRow(
-          column(4, textInput(("id_column"), label = list("ID Column",
-            bsButton("id_info", label = "",
-              icon = icon("info", lib = "font-awesome"),
-              style = "default", size = "extra-small")
+          column(
+            4,
+            selectInput(
+              "id_column",
+              label = list(
+                "ID Column",
+                bsButton(
+                  "id_info",
+                  label = "",
+                  icon = icon("info", lib = "font-awesome"),
+                  style = "default",
+                  size = "extra-small"
+                )
+              ),
+              choices = "",
+              selected = ""
             ),
-            value = "")),
-          bsPopover("id_info", "More Information", 
-            content = HTML(paste("Only applicable for <b>array</b> schema.",
-              "For analysis, within each example, <b>objects</b> must be compared by an id column.",
-              "<b>Objects</b> will otherwise be compared by row order- which may be different from the ground truth to the llm output."
+            bsPopover(
+              "id_info", "More Information", 
+              content = HTML(paste(
+                "Only applicable for <b>array</b> schema.",
+                "For analysis, within each example, <b>objects</b> must be compared by an id column.",
+                "<b>Objects</b> will otherwise be compared by row order - which may differ from the ground truth vs LLM output."
+              )),
+              "right", trigger = "click",
+              options = list(container = "body")
             )
-            ),
-            "right", trigger = "click",
-            options = list(container = "body")
           ),
           column(4, textInput(("llm_context"), label = list("Context window",
             bsButton("context_info", label = "",
