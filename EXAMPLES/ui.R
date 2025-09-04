@@ -21,13 +21,15 @@ examples_ui <-
       column(
         width = 8,
         fluidRow(
-          column(6, fileInput(("schema_file"), "Upload JSON Schema (.json/.txt)")),
-          column(6, fileInput(("empty_examples"), label = list("Upload Examples (.xlsx)",
+          column(4, fileInput(("schema_file"), "Upload JSON Schema (.json/.txt)")),
+          column(4, fileInput(("empty_examples"), label = list("Upload Examples (.xlsx)",
             bsButton("example_1_info", label = "",
               icon = icon("info", lib = "font-awesome"),
               style = "default", size = "extra-small")
             )
-            ))),
+            )),
+          column(4, uiOutput("example_col_picker"))
+          ),
         bsPopover("example_1_info", "More Information", 
           content = HTML(paste("Input at least <b>20</b> representative examples as the xlsx file.",
             "Place examples in the first column of an excel file without columns names (data in <b>A1:An</b> with <b>n</b> examples)."

@@ -12,11 +12,9 @@ examples_server <- function(input, output, session) {
     add_row_toggle <- reactiveVal(list())
     
     
-    # input examples and json
     observeEvent(input$empty_examples, {
       req(input$empty_examples)
       
-      # Ensure it's an .xlsx file
       ext <- tools::file_ext(input$empty_examples$name)
       if (tolower(ext) != "xlsx") {
         showModal(modalDialog(
@@ -28,20 +26,39 @@ examples_server <- function(input, output, session) {
         return(NULL)
       }
       
-      # Try reading the file safely
       tryCatch({
-        df <- readxl::read_excel(input$empty_examples$datapath, col_names = FALSE)
-        if (ncol(df) >= 1) {
-          example_data(df[[1]])
-          example_index(1)
+        df <- readxl::read_excel(input$empty_examples$datapath, col_names = TRUE)
+        
+        if (ncol(df) >= 2) {
+          # Show column picker
+          output$example_col_picker <- renderUI({
+            selectInput("example_col", "Select column for examples:",
+              choices = names(df), selected = names(df)[1])
+          })
+          
+          # Wait for user to choose the column
+          observeEvent(input$example_col, {
+            req(input$example_col)
+            
+            # Create a data frame with only that column (pipe style)
+            df_selected <- df %>%
+              select(all_of(input$example_col))
+            
+            # Now df_selected[[1]] is the examples column
+            example_data(df_selected[[1]])
+            example_index(1)
+            
+          }, ignoreInit = TRUE)
+          
         } else {
           showModal(modalDialog(
             title = "Invalid file content",
-            "The file appears to be empty or malformed.",
+            "The file must have at least two columns with headers.",
             easyClose = TRUE,
             footer = NULL
           ))
         }
+        
       }, error = function(e) {
         showModal(modalDialog(
           title = "Error reading file",
@@ -51,6 +68,7 @@ examples_server <- function(input, output, session) {
         ))
       })
     })
+  
     
     observeEvent(input$schema_file, {
       req(input$schema_file)
@@ -259,7 +277,7 @@ examples_server <- function(input, output, session) {
       # Validation
       json_out <- reactive_json_output()
       if (!is.null(json_out)) {
-        validator <- jsonvalidate::json_schema$new(input$schema_file$datapath)
+        validator <- json_schema$new(input$schema_file$datapath)
         valid <- validator$validate(json_out, verbose = TRUE)
         
         if (isTRUE(valid)) {
@@ -277,7 +295,7 @@ examples_server <- function(input, output, session) {
               tail(parts, 1)
             }),
             stringsAsFactors = FALSE
-          ) |> dplyr::distinct()
+          ) |> distinct()
           
           set_invalid_cells(error_info)
           set_validation_message("❌ Invalid")
@@ -329,7 +347,7 @@ examples_server <- function(input, output, session) {
       
       # Show detailed errors if invalid
       if (get_validation_message() == "❌ Invalid") {
-        valid <- jsonvalidate::json_schema$new(input$schema_file$datapath)$validate(
+        valid <- json_schema$new(input$schema_file$datapath)$validate(
           reactive_json_output(), verbose = TRUE
         )
         errors <- attr(valid, "errors")
@@ -376,7 +394,7 @@ examples_server <- function(input, output, session) {
         full_object <- list(data = coerced_rows[[1]])
       }
       
-      jsonlite::toJSON(full_object, auto_unbox = TRUE, pretty = TRUE)
+      toJSON(full_object, auto_unbox = TRUE, pretty = TRUE)
     })
     
     get_full_output <- function() {
@@ -415,19 +433,7 @@ examples_server <- function(input, output, session) {
         data = data_list
       )
     }
-    
-    output$download_rds <- downloadHandler(
-      filename = function() {
-        name <- input$filename_rds
-        if (name == "") name <- "output"
-        paste0(name, ".rds")
-      },
-      content = function(file) {
-        output_data <- get_full_output()
-        saveRDS(output_data, file)
-      }
-    )
-    
+
     output$download_xlsx <- downloadHandler(
       filename = function() {
         name <- input$filename_xlsx
@@ -438,7 +444,7 @@ examples_server <- function(input, output, session) {
         output_data <- get_full_output()
         if (is.null(output_data)) return()
         
-        flat_df <- dplyr::bind_rows(lapply(seq_len(nrow(output_data)), function(i) {
+        flat_df <- bind_rows(lapply(seq_len(nrow(output_data)), function(i) {
           ex <- output_data$examples[i]
           dat <- output_data$data[[i]]
           if (is.null(dat)) {
@@ -449,7 +455,20 @@ examples_server <- function(input, output, session) {
           out
         }))
         
-        writexl::write_xlsx(flat_df, file)
+        
+        req(input$example_col)    
+        
+        example_col <- input$example_col
+        
+        df <- read_excel(input$empty_examples$datapath, col_names = TRUE) %>%
+          rename(examples = all_of(example_col))
+        
+        new_col <- setdiff(names(df), "examples")
+  
+        flat_df <- left_join(flat_df, df, by = "examples") %>%
+        select(all_of(new_col), everything())
+        
+        write_xlsx(flat_df, file)
       }
     )
 }
