@@ -269,14 +269,14 @@ prompt_server <- function(input, output, session) {
       rename("Variable" = var.x,
         "LLM" = values.x,
         "Ground Truth"= values.y) %>%
-      nest(diff = any_of(c(id_col, "Variable", "LLM", "Ground Truth")))
+      nest(diff = any_of(c(id_column, "Variable", "LLM", "Ground Truth")))
     
     hal_id <- hallucinations_df %>%
-      select(!any_of(c("observation", id_col))) %>%
+      select(!any_of(c("observation", id_column))) %>%
       mutate(H = 1)
     
     omi_id <- omissions_df %>%
-      select(!any_of(c("observation", id_col))) %>%
+      select(!any_of(c("observation", id_column))) %>%
       mutate(O = 1)
     
     test <- left_join(test, diff_merge, by = input_text_column)
@@ -356,7 +356,7 @@ prompt_server <- function(input, output, session) {
       mutate(across(c(TP, TN, FP, FN), ~ ifelse(is.na(.), 0, .))) %>%
       mutate(Accuracy = paste0(round(100*((TP + TN) / (TP + TN + FP + FN)), 2),"%")) %>%
       mutate(F1 = round((2*TP/(2*TP + FP + FN)), 2)) %>%
-      mutate(Jaccard = round((TP/(TP + FP + FN)), 2)) %>%
+      # mutate(Jaccard = round((TP/(TP + FP + FN)), 2)) %>%
       select(-TP, -TN, -FP, -FN, -n)
     
     llm_obs <- llm_run_filtered %>%
@@ -388,9 +388,13 @@ prompt_server <- function(input, output, session) {
     #display tables
     rv$summary_table <- data.frame(
       Metric = c("Average Time", "LLM objects", "True objects", "Hallucinated objects", "Omitted objects", "Compared objects",
-        "Accuracy", "F1 Score", "Jaccard Similarity"),
+        "Accuracy", "F1 Score"
+        # , "Jaccard Similarity"
+        ),
       Value = as.character(c(avg_time, llm_obs, key_obs, hallucinations, omissions, shared_obs,
-        total_accuracy, total_f1, total_jaccard)),
+        total_accuracy, total_f1
+        # , total_jaccard
+        )),
       stringsAsFactors = FALSE
     )
     rv$variable_summary <- total_differences
@@ -451,10 +455,10 @@ prompt_server <- function(input, output, session) {
     idx <- example_index()
     diffs <- rv$test$diff[[idx]]
     
-    if (is.null(diff) || nrow(diff) == 0) {
+    if (is.null(diffs) || nrow(diffs) == 0) {
       return(NULL)
     } else {
-      diff
+      diffs
     }
   }, striped = FALSE, hover = TRUE, bordered = TRUE, rownames = FALSE)
   
