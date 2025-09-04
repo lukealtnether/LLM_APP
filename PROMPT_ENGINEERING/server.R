@@ -11,6 +11,8 @@ prompt_server <- function(input, output, session) {
     req(input$example_file)
     example_excel <- read_excel(input$example_file$datapath, col_names = TRUE)
     df <- example_excel %>%
+      select(examples, ends_with("_app")) %>%
+      rename_with(~ sub("_app$", "", .x), ends_with("_app")) %>%
       nest(data = -examples)
     rv$df <- df  
     first_nested <- df$data[[1]]
@@ -200,67 +202,7 @@ prompt_server <- function(input, output, session) {
     llm_output <- llm_run_filtered %>%
       select(-all_of(by_vars))
     
-    
-    ##For shuffling through individual examples
-    # ------------------------------------------------------------------------------
-    # 
-    # results <- pmap(
-    #   list(test$data, test[[llm_model]]),
-    #   function(key_filtered, llm_run_filtered) {
-    #     comp <- comparedf(llm_run_filtered, key_filtered, by = id_column, int.as.num = TRUE)
-    #     
-    #     diffs_df <- diffs(comp) %>%
-    #       select(-row.x, -row.y, -var.x) %>%
-    #       rename(
-    #         variable = var.y, 
-    #         llm = values.x,
-    #         key = values.y
-    #       ) %>%
-    #       select(any_of(id_column), everything())
-    #     
-    #     hal_df <- comp$frame.summary$unique[[1]] %>%
-    #       filter(!if_any(-observation, is.na))
-    #     
-    #     omi_df <- comp$frame.summary$unique[[2]] %>%
-    #       filter(!if_any(-observation, is.na))
-    #       
-    #     hallucinations_count <- nrow(hal_df) 
-    #       
-    #     omissions_count <- nrow(omi_df)
-    # 
-    #     list(
-    #       differences = diffs_df,
-    #       hallucinations = hallucinations_count,
-    #       omissions = omissions_count
-    #     )
-    #   }
-    # )
-    # 
-    # # Add new columns to complete_df
-    # test$differences     <- map(results, "differences")
-    # test$hallucinations  <- map_int(results, "hallucinations")
-    # test$omissions       <- map_int(results, "omissions")
-
-    # ------------------------------------------------------------------------------
-    
-    comparison <- comparedf(llm_run_filtered, key_filtered, by = by_vars, int.as.num = TRUE)
-    
-    
-    #get a df of the true hallucinations/omission by filtering out non objects
-    hallucinations_df <- comparison$frame.summary$unique[[1]] %>%
-      filter(!if_any(-observation, is.na))
-    
-    omissions_df <- comparison$frame.summary$unique[[2]] %>%
-      filter(!if_any(-observation, is.na))
-    
-    #df of differences by each variable
-    total_differences <- diffs(comparison, by.var = TRUE) %>%
-      select(-var.x, -NAs) %>%
-      rename(variable = var.y) 
-    
-    #df of differences by values
-    diff_details <- diffs(comparison) 
-    
+   
     # ------------------------------------------------------------------------------
     # new differences logic
     

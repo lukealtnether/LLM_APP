@@ -450,6 +450,7 @@ examples_server <- function(input, output, session) {
           if (is.null(dat)) {
             out <- data.frame(examples = ex, stringsAsFactors = FALSE)
           } else {
+            names(dat) <- paste0(names(dat), "_app")
             out <- cbind(examples = ex, dat)
           }
           out
@@ -462,11 +463,8 @@ examples_server <- function(input, output, session) {
         
         df <- read_excel(input$empty_examples$datapath, col_names = TRUE) %>%
           rename(examples = all_of(example_col))
-        
-        new_col <- setdiff(names(df), "examples")
   
-        flat_df <- left_join(flat_df, df, by = "examples") %>%
-        select(all_of(new_col), everything())
+        flat_df <- left_join(flat_df, df, by = "examples") 
         
         write_xlsx(flat_df, file)
       }
