@@ -31,16 +31,6 @@ random_server <- function(input, output, session) {
     }
   })
   
-
-  list_files <- list.files("example prompt and schema files",recursive = T)
-  updateSelectInput(session, "select_schema", 
-                    choices = c("Please select" = "", list_files[grepl("(?i)schema", list_files)]),
-                    selected = "")
-  updateSelectInput(session, "select_prompt", 
-                    choices = c("Please select" = "", list_files[grepl("(?i)prompt", list_files)]),
-                    selected = "")
-  
-  
   observeEvent(input$select_schema, {
     # Check if a schema file is selected, then send the value to input$batch_json
     if (input$select_schema != "") {
@@ -51,8 +41,6 @@ random_server <- function(input, output, session) {
     } 
   })
     
-  
-  
   
   observeEvent(input$batch_xlsx, {
     req(input$batch_xlsx)
@@ -71,12 +59,9 @@ random_server <- function(input, output, session) {
     
     # Try reading the file
     tryCatch({
-      #df <- readxl::read_excel(input$batch_xlsx$datapath, col_names = FALSE)
-      df <- readxl::read_excel(input$batch_xlsx$datapath)
-      
+      df <- readxl::read_excel(input$batch_xlsx$datapath, col_names = TRUE)
       if (ncol(df) >= 1) {
         full_batch_data(df)
-        
         updateSelectInput(session, "input_column", choices = names(df), selected = names(df)[1])
         
         #batch_index(1)
@@ -117,8 +102,6 @@ random_server <- function(input, output, session) {
     n <- nrow(data)
     sample_n <- sampled_n()
     if (!is.null(sample_n) && sample_n > 0 && sample_n < n) {
-      # set.seed(1)  
-      #batch_data(sample(data, sample_n))
       batch_data(data[sample(n, sample_n),])
     } else {
       batch_data(data)
@@ -196,10 +179,9 @@ random_server <- function(input, output, session) {
     seed_num <- 1234
     
     # Create a working dataframe
-    #input_data <- tibble(!!input_text_column := batch_data())
+    
     input_data <- batch_data()
-    # test[[paste0(output_column, "_time")]] <- numeric(nrow(test))
-    # 
+    
     messages_list <- list(list(role = "system", content = full_prompt))
     
     withProgress(message = "Running model inference...", value = 0, {
@@ -234,16 +216,6 @@ random_server <- function(input, output, session) {
           input_data[[output_column]][i] <- list(parsed$data)
           input_data[[paste0(output_column, "_time")]][i] <- duration_sec
         }
-        
-        # duration <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
-        # if (!is.null(result)) {
-        #   parsed <- tryCatch(fromJSON(result), error = function(e) NULL)
-        #   if (!is.null(parsed$data)) {
-        #     test[[output_column]][i] <- list(as_tibble(parsed$data))
-        #   }
-        # }
-        # 
-        # test[[paste0(output_column, "_time")]][i] <- duration
       }
     })
     
@@ -269,14 +241,7 @@ random_server <- function(input, output, session) {
     filename = function() paste0(input$filename_batch,".xlsx"),
     content = function(file) {
       req(rv$output_data)
-      
-      # output_column <- input$batch_model
-      # 
-      # # Unnest the nested model output
-      # unnested_df <- rv$test %>%
-      #   unnest(cols = all_of(output_column))
       unnested_df <- rv$output_data
-      # Write to Excel
       writexl::write_xlsx(unnested_df, path = file)
     }
   )

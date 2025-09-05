@@ -2,28 +2,13 @@ random_ui <- fluidPage(
   useShinyjs(),
   titlePanel("Run a Sample or Entire Batch"),
   tags$hr(),
-  
   fluidRow(
-    column(6,
-           tags$h5("Schema & Prompt"),
-           fluidRow(
-             column(6, fileInput("batch_json", "Upload Schema (.json)")),
-             column(6, fileInput("batch_prompt", "Upload Prompt (.txt)"))
-           ),
-           fluidRow(
-             column(6, selectInput("select_schema", "Or Select Existing Schema", choices = NULL, selected = NULL)),
-             column(6, selectInput("select_prompt", "Or Select Existing Prompt", choices = NULL, selected = NULL))
-           )
-    ),
-    column(3,
-           tags$h5("Batch"),
-           fileInput("batch_xlsx", "Upload Batch (.xlsx)"),
-           textInput("sample_size", "Sample Size")
-    )
+    column(4, fileInput("batch_json", "Upload Schema (.json)")),
+    column(4, fileInput("batch_prompt", "Upload Prompt (.txt)")),
+    column(4, fileInput("batch_xlsx", "Upload Batch (.xlsx)"))
   ),
-  
+  textInput("sample_size", "Sample Size"),
   tags$hr(),
-  
   fluidRow(
     column(2, textInput("batch_address", "BIOHPC node", value = "172.18.227.")),
     column(3, selectInput("batch_model", "Model", choices = c("Need to specify IP address first"))),
