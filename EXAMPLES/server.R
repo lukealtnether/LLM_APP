@@ -32,7 +32,7 @@ examples_server <- function(input, output, session) {
         if (ncol(df) >= 2) {
           # Show column picker
           output$example_col_picker <- renderUI({
-            selectInput("example_col", "Select column for examples:",
+            selectInput("example_col", "Select Input Text Column:",
               choices = names(df), selected = names(df)[1])
           })
           

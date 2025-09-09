@@ -8,6 +8,10 @@ random_server <- function(input, output, session) {
   sampled_n <- reactiveVal()
   full_batch_data <- reactiveVal()
   
+  output$validation_instructions <- renderText({
+    "After downloading your sample run, you must manually validate to get your estimated database statistics.
+    The method by which you evaluate your sample is dependednt on the user and the task at hand. "
+  })
   
   get_ollama_models <- function(ip) {
     url <- paste0("http://", ip, ":11434/api/tags")
@@ -25,7 +29,7 @@ random_server <- function(input, output, session) {
   observeEvent(input$batch_address, {
     models <- get_ollama_models(input$batch_address)
     if (is.null(models)) {
-      updateSelectInput(session, "batch_model", choices = c("Connection failed or no models found"))
+      updateSelectInput(session, "batch_model", choices = c("Connection failed"))
     } else {
       updateSelectInput(session, "batch_model", choices = models, selected = models[1])
     }
@@ -59,7 +63,7 @@ random_server <- function(input, output, session) {
     
     # Try reading the file
     tryCatch({
-      df <- readxl::read_excel(input$batch_xlsx$datapath, col_names = TRUE)
+      df <- read_excel(input$batch_xlsx$datapath, col_names = TRUE)
       if (ncol(df) >= 1) {
         full_batch_data(df)
         updateSelectInput(session, "input_column", choices = names(df), selected = names(df)[1])
@@ -219,6 +223,21 @@ random_server <- function(input, output, session) {
       }
     })
     
+    # llm_output_df <- input_data %>%
+    #   select(all_of(c(input_text_column, output_column))) %>%
+    #   unnest(cols = all_of(output_column), keep_empty = TRUE) %>%
+    #   { 
+    #     if (!is.null(sampled_n())) {
+    #       rename_with(., ~ paste0(.x, "_llm_output"), .cols = setdiff(names(.), input_text_column))
+    #     } else {
+    #       .
+    #     }
+    #   }
+    # everything_else <- input_data %>%
+    #   select(-output_column)
+    # output_data <- left_join(llm_output_df, everything_else, by = input_text_column)
+    
+
     # Process and filter the LLM output
     llm_sym <- sym(output_column)
     output_data <- input_data %>%
@@ -230,8 +249,6 @@ random_server <- function(input, output, session) {
           filter(map_chr(!!llm_sym, class) != 'data.frame') %>%
           select(-all_of(input$batch_model))
       )
-    
-    
     
     rv$output_data <- output_data
     progress_status("Model run complete. You may now download results.")
