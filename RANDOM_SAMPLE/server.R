@@ -1,12 +1,14 @@
 random_server <- function(input, output, session) {
   nested_colnames <- reactiveVal(NULL)
   progress_status <- reactiveVal("Waiting for submission...")
-  rv <- reactiveValues(output_data = NULL)
+  rv <- reactiveValues(output_data = NULL,
+    manual_data = NULL)
   batch_data <- reactiveVal()
   batch_index <- reactiveVal(1)
   collapsed_batch_prompt <- reactiveVal()
   sampled_n <- reactiveVal()
   full_batch_data <- reactiveVal()
+
   
   output$validation_instructions <- renderText({
     "After downloading your sample run, you must manually validate to get your estimated database statistics.
@@ -223,21 +225,6 @@ random_server <- function(input, output, session) {
       }
     })
     
-    # llm_output_df <- input_data %>%
-    #   select(all_of(c(input_text_column, output_column))) %>%
-    #   unnest(cols = all_of(output_column), keep_empty = TRUE) %>%
-    #   { 
-    #     if (!is.null(sampled_n())) {
-    #       rename_with(., ~ paste0(.x, "_llm_output"), .cols = setdiff(names(.), input_text_column))
-    #     } else {
-    #       .
-    #     }
-    #   }
-    # everything_else <- input_data %>%
-    #   select(-output_column)
-    # output_data <- left_join(llm_output_df, everything_else, by = input_text_column)
-    
-
     # Process and filter the LLM output
     llm_sym <- sym(output_column)
     output_data <- input_data %>%
@@ -251,6 +238,7 @@ random_server <- function(input, output, session) {
       )
     
     rv$output_data <- output_data
+  
     progress_status("Model run complete. You may now download results.")
   })
   
@@ -259,7 +247,15 @@ random_server <- function(input, output, session) {
     content = function(file) {
       req(rv$output_data)
       unnested_df <- rv$output_data
-      writexl::write_xlsx(unnested_df, path = file)
+      write_xlsx(unnested_df, path = file)
+    }
+  )
+  
+  output$download_manual <- downloadHandler(
+    filename = function() paste0(input$filename_manual,".xlsx"),
+    content = function(file) {
+      req(batch_data())
+      write_xlsx(batch_data(), path = file)
     }
   )
 }

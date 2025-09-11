@@ -22,7 +22,7 @@ random_ui <- fluidPage(
       ),
       tags$hr(),
       fluidRow(
-        column(4, textInput("batch_address", "BIOHPC node", value = "172.18.227.")),
+        column(4, textInput("batch_address", "IP Address", value = "172.18.227.")),
         column(4, selectInput("batch_model", "Model", choices = c("Enter IP address first"))),
       ),
       fluidRow(
@@ -34,16 +34,25 @@ random_ui <- fluidPage(
         column(4, textInput("batch_context", "Context Window", value = "4000")),
         column(4, uiOutput("batch_word_count")),
       ),
-      actionButton("submit_batch", "Submit", class = "btn btn-success"),
-      tags$hr(),
-      textInput("filename_batch", "Enter file name (without extension):", value = ""),
-      downloadButton("download_batch", "Download Run")
+      actionButton("submit_batch", "Submit", class = "btn btn-success")
     ),
     column(6, 
       h4("Validation instructions"),
       uiOutput("validation_instructions")
     )
+  ),
+  tags$hr(),
+  fluidRow(
+    column(4,
+      textInput("filename_batch", "Enter file name (without extension):", value = ""),
+      downloadButton("download_batch", "Download Run")
+    ),
+    column(4,
+      textInput("filename_manual", "Enter file name (without extension):", value = ""),
+      downloadButton("download_manual", "Download Manual Entry Template")
+    ),
     
   )
+  
   
 )
