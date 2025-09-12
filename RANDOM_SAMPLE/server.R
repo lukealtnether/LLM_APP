@@ -10,9 +10,20 @@ random_server <- function(input, output, session) {
   full_batch_data <- reactiveVal()
 
   
-  output$validation_instructions <- renderText({
-    "After downloading your sample run, you must manually validate to get your estimated database statistics.
-    The method by which you evaluate your sample is dependednt on the user and the task at hand. "
+  output$validation_instructions <- renderUI({HTML("After downloading your sample run, you must manually validate to get your estimated database statistics.
+    The method by which you evaluate your sample is dependednt on the user and the task at hand. Suggested methods for 
+    manual validation are as follows: <br> <br>
+    
+    1) Run your random sample on a suffeciently large sample size usually ~ 100 examples. <br><br>
+    
+    2) Download the run as well as the manual entry template. <br><br>
+    
+    3) Two individuals will then indpendedntly input ground truth using the manual entry app. <br><br>
+    
+    4) Input the two manual entries into the validation app and resolve any ground truth discrepencies <br><br>
+    
+    5) Input the LLM run and resolve any discrepencies as true or false values.")
+    
   })
   
   get_ollama_models <- function(ip) {

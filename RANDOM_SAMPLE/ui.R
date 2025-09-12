@@ -14,11 +14,8 @@ random_ui <- fluidPage(
             icon = icon("info", lib = "font-awesome"),
             style = "default", size = "extra-small")
           ))),
-        column(6, selectInput("input_column", label = list("Input Column",
-          bsButton("input_col_info", label = "",
-            icon = icon("info", lib = "font-awesome"),
-            style = "default", size = "extra-small")
-          ), choices = c("Upload Batch first")))
+        column(6, selectInput("input_column", "Input Column", 
+          choices = c("Upload Batch first")))
       ),
       tags$hr(),
       fluidRow(
@@ -52,7 +49,23 @@ random_ui <- fluidPage(
       downloadButton("download_manual", "Download Manual Entry Template")
     ),
     
+  ),
+  bsPopover(
+    "batch_info", "More Information", 
+    content = HTML(paste(
+      "Upload your database. Required formatting includes column names, and an input text column." 
+    )),
+    "right", trigger = "click",
+    options = list(container = "body")
+  ),
+  bsPopover(
+    "sample_info", "More Information", 
+    content = HTML(paste(
+      "Select the sample size for your random sample. If you are running the entire batch, leave this blank.",
+      "Around ~100 examples is usually suffeceient to estimate accruacy.",
+      "If the estimated accuracy is underpowered, increase the smaple size of your random sample."
+    )),
+    "right", trigger = "click",
+    options = list(container = "body")
   )
-  
-  
 )
