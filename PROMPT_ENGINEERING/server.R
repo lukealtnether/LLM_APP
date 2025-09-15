@@ -287,10 +287,11 @@ prompt_server <- function(input, output, session) {
     
     #Get the unique rows in the LLM and filter them out to get the compared df
     unique_rows <- comparison$frame.summary$unique[[1]]$observation
-    
-    #converted the LLM run into similar format to diffs output but only include the compared df
+   
     shared_df <- llm_run_filtered %>%
-      slice(-unique_rows) %>%
+      { 
+        if(length(unique_rows) == 0) . else slice(., -unique_rows)
+      } %>%
       pivot_longer(
         cols = -all_of(by_vars),
         names_to = "var.x",
@@ -314,6 +315,14 @@ prompt_server <- function(input, output, session) {
         TN = sum(TN),
         .groups = "drop"
       )
+    print(unique_rows)
+    print(wrong_obs)
+    print(shared_df)
+    print(correct_shared_df)
+    print(tp_tn_summary)
+    print(fp_fn_summary)
+    
+
     
     # Merge into total_differences
     total_differences <- total_differences %>%
