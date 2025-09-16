@@ -79,14 +79,14 @@ prompt_ui <-  fluidPage(
       
       column(
         width = 6,
-        column(width = 4,
+        column(width = 6,
           h4(list("Overall Statistics",
             bsButton("o_stat_info", label = "",
               icon = icon("info", lib = "font-awesome"),
               style = "default", size = "extra-small")
             )),
           tableOutput(("obs_acc"))),
-        column(width = 8,
+        column(width = 6,
           h4(list("Variable Statistics",
             bsButton("v_stat_info", label = "",
               icon = icon("info", lib = "font-awesome"),
@@ -100,8 +100,7 @@ prompt_ui <-  fluidPage(
               "<b>Accuracy</b> is defined by the formula (TP + TN) / (TP + TN + FP + FN) and is a good representation of how well the prompt is doing",
               "from a completely balanced perspective (this is the only metric that rewards true negatives). <b>F1 Score</b> is defined by the formula 2TP / (2TP + FP +FN) and represents",
               "the harmonic mean of precision and recall. F1 is a good metric for classification tasks where you want to identify prositive finidngs (ie: PE identification algoritm).",
-              "<b>Jaccard Similarity</b> is defined by the formula TP / (TP + FP + FN) and provides the overlap of the true positive LLM response to all positive data (in LLM response and groudn truth). Similar to accuracy",
-              "but only cares about positive or omitted information. TN are not factored and thus this metric is ideal for pure database creation. Of note, for all of these fomulas",
+              "Of note, for all of these fomulas",
               "hallucinations count as a FP in every property and omissions count as a FN in every property. However, for the variable metrics to the right, only shared objects are", 
               "factored to truly asses each property."
               

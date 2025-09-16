@@ -315,15 +315,7 @@ prompt_server <- function(input, output, session) {
         TN = sum(TN),
         .groups = "drop"
       )
-    print(unique_rows)
-    print(wrong_obs)
-    print(shared_df)
-    print(correct_shared_df)
-    print(tp_tn_summary)
-    print(fp_fn_summary)
-    
 
-    
     # Merge into total_differences
     total_differences <- total_differences %>%
       mutate(Errors = as.integer(n)) %>%
