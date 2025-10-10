@@ -208,7 +208,7 @@
             "anyOf": [
               {
                 "type": "string",
-                "enum": ["Homogeneous","Slightly heterogeneous","Heterogeneous"]
+                "enum": ["Homogeneous","Slightly heterogeneous","Heterogeneous", "NA"]
               },
               {
                 "type": "null"

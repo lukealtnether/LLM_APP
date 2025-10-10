@@ -61,12 +61,12 @@ depth_extension: how deep the lesion extends in the kidney
 - Hilar fat/collecting system
 - null if not mentioned
 
-t2_signal_relative_to_renal_cortex: T2 signal relative to the renal cortex and how homogenous is the signal:
+t2_signal_relative_to_renal_cortex: T2 signal relative to the renal cortex enhancement:
 one of:
 - Hyperintense
 - Isointense
 - Hypointense
-and one of:
+t2_signal_relative_to_renal_cortex: T2 signal relative to the renal cortex homogeneity:
 - Slightly heterogeneous ("Slightly" and "mildly" are interchangeable.)
 - Homogeneous
 - Heterogeneous
