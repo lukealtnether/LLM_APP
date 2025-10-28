@@ -67,7 +67,7 @@ llm_extract <- function(
     })
     
     # Your processing logic here
-  }
+    
     end_time <- Sys.time()
     duration_sec <- as.numeric(difftime(end_time, start_time, units = "secs"))
     
@@ -84,6 +84,7 @@ llm_extract <- function(
 
       mydata[[paste0(llm_model, "_time")]][i] <- duration_sec
     }
+  }
   
   # Process and filter the LLM output
   llm_sym <- sym(llm_model)
