@@ -7,7 +7,7 @@ library(httr2)
 llm_extract <- function(
     mydata,
     prompt_path,
-    format_path,
+    schema_path,
     llm_ip_address = "http://172.18.227.92:11434",
     llm_model = "phi4",
     input_text_column = "final_diag",
@@ -15,7 +15,7 @@ llm_extract <- function(
     context_window = 4000
 ) {
   prompt_txt <- readLines(prompt_path, warn = FALSE) %>% paste(collapse = "\n")
-  schema_r <- readLines(format_path, warn = FALSE, encoding = 'UTF-8') %>%
+  schema_r <- readLines(schema_path, warn = FALSE, encoding = 'UTF-8') %>%
     paste(collapse = "\n") %>%
     fromJSON(simplifyVector = FALSE)
   
