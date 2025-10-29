@@ -156,7 +156,9 @@ prompt_server <- function(input, output, session) {
         if (!is.null(result)) {
           parsed <- tryCatch(fromJSON(result), error = function(e) NULL)
           if (!is.null(parsed$data)) {
-            test[[output_column]][i] <- list(parsed$data)
+            test[[output_column]][i] <- list(parsed$data%>%
+                                               modify_if(is.null, ~NA) %>%
+                                               as.data.frame(stringsAsFactors = FALSE))
           }
         }
         
