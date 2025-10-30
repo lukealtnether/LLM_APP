@@ -418,7 +418,7 @@ prompt_server <- function(input, output, session) {
   output$example_check <- renderPrint({
     req(rv$test)
     idx <- example_index()
-    rv$test$examples[idx]
+    cat(paste0("Example ", idx, ":\n", rv$test$examples[idx]))
   })
   
   output$differences_df <- renderTable({
