@@ -138,7 +138,7 @@
               }
             ]
           },
-          "t2_signal_relative_to_renal_cortex_homogenecity": {
+          "t2_signal_relative_to_renal_cortex_homogeneity": {
             "anyOf": [
               {
                 "type": "string",
@@ -304,7 +304,7 @@
             ]
           }
         },
-        "required": ["lesion_id", "ccls", "size_unit", "side", "location", "prior_size", "prior_date", "truesize", "mri_staging", "percent_endophytic", "depth_extension", "t2_signal_relative_to_renal_cortex_enhancement","t2_signal_relative_to_renal_cortex_homogeneity", "t1_chemical_shift", "segmental_inversion_enhancement", "high_b_value_dwi","adc", "corticomedullary_enhancement_relative_to_renal_cortex_enhancement", "corticomedullary_enhancement_relative_to_renal_cortex_homogeneity","delayed_enhancement", "fat_poor_aml_suspected", "tumor_margin", "tumor_invasion", "renal_vein_anatomy", "renal_vein_thrombus", "renal_artery_anatomy", "renal_artery_stenosis"]
+        "required": ["lesion_id", "ccls", "size_unit", "side", "location", "prior_size", "prior_date", "truesize", "mri_staging", "percent_endophytic", "depth_extension", "t2_signal_relative_to_renal_cortex_enhancement", "t2_signal_relative_to_renal_cortex_homogeneity", "t1_chemical_shift", "segmental_inversion_enhancement", "high_b_value_dwi","adc", "corticomedullary_enhancement_relative_to_renal_cortex_enhancement", "corticomedullary_enhancement_relative_to_renal_cortex_homogeneity","delayed_enhancement", "fat_poor_aml_suspected", "tumor_margin", "tumor_invasion", "renal_vein_anatomy", "renal_vein_thrombus", "renal_artery_anatomy", "renal_artery_stenosis"]
       }
     }
   },
