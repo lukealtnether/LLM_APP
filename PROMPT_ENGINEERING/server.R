@@ -1,7 +1,7 @@
 prompt_server <- function(input, output, session) {
   nested_colnames <- reactiveVal(NULL)
   nested_coltypes <- reactiveVal()
-  rv <- reactiveValues(test = NULL, df = NULL)
+  rv <- reactiveValues(test = NULL, df = NULL, venn_plot = NULL)
   
   output$example_file_ui <- renderUI({
     fileInput(("example_file"), "Upload Completed Examples (.xlsx)")
@@ -352,6 +352,21 @@ prompt_server <- function(input, output, session) {
     total_jb <- (sum(fp_fn_summary$JB) + hallucinations*nrow(total_differences))
     total_accuracy <- paste0(round((100*(total_tp + total_tn) / (nrow(llm_output)*ncol(llm_output))), 2),"%")
     total_jaccard <- round((total_tp/(total_tp + total_ja + total_jb)), 2)
+    
+    venn_list <- list(
+      "Ground Truth" = 1:(total_tp + total_ja),  
+      "LLM" = (total_ja + 1):(total_ja + total_tp + total_jb)  
+    )
+    
+    # Create the Venn diagram
+    rv$venn_plot <- ggvenn(venn_list, 
+      fill_color = c("blue", "red"),
+      fill_alpha = 0.5,
+      stroke_size = 1,
+      set_name_size = 6,
+      text_size = 8,
+      show_percentage = FALSE,
+      auto_scale = TRUE)
   
 
     #display tables
@@ -405,6 +420,11 @@ prompt_server <- function(input, output, session) {
     req(rv$summary_table)
     rv$summary_table
   }, rownames = FALSE, striped = FALSE, hover = TRUE, align = "l")
+  
+  output$venn_plot <- renderPlot({
+    req(rv$venn_plot)
+    rv$venn_plot
+  })
   
   output$prop_acc <- renderTable({
     req(rv$variable_summary)

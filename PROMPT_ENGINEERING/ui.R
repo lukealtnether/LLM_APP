@@ -85,7 +85,9 @@ prompt_ui <-  fluidPage(
               icon = icon("info", lib = "font-awesome"),
               style = "default", size = "extra-small")
             )),
-          tableOutput(("obs_acc"))),
+          tableOutput(("obs_acc")),
+          plotOutput("venn_plot", height = "250px")
+          ),
         column(width = 6,
           h4(list("Variable Statistics",
             bsButton("v_stat_info", label = "",
