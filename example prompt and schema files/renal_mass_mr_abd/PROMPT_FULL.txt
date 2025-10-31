@@ -61,12 +61,13 @@ depth_extension: how deep the lesion extends in the kidney
 - Hilar fat/collecting system
 - null if not mentioned
 
-t2_signal_relative_to_renal_cortex: T2 signal relative to the renal cortex enhancement:
+T2 signal relative to the renal cortex enhancement:
 one of:
 - Hyperintense
 - Isointense
 - Hypointense
-t2_signal_relative_to_renal_cortex: T2 signal relative to the renal cortex homogeneity:
+
+T2 signal relative to the renal cortex homogeneity:
 - Slightly heterogeneous ("Slightly" and "mildly" are interchangeable.)
 - Homogeneous
 - Heterogeneous
@@ -86,22 +87,6 @@ segmental_inversion_enhancement: is there segmental inversion enhacement in the 
 - Not applicable
 - null if not mentioned
 
-corticomedullary_enhancement_relative_to_renal_cortex: how does the corticomedulary (delayed) phase enhance relative to the renal coretex and how homogenous is the signal:
-
-Relative enhancement one of: 
-- Intense = 100%
-- Moderate = 50%
-- Mild = 30%
-- NA 
-
-Homogenecity one of: 
-- Homogeneous 
-- Slightly heterogeneous
-- Heterogeneous
-- NA
-
-- null if not mentioned
-
 high_b_value_dwi: High b-value DWI (diffusion weighted imaging):
 - Hyperintensity
 - Isointense
@@ -114,13 +99,28 @@ ADC (apparent diffusion coeffecient) of the lesion:
 - Hypointense
 - null if not mentioned
 
+corticomedullary_enhancement_relative_to_renal_cortex_enhancement: how does the corticomedulary (delayed) phase enhance relative to the renal coretex:
+
+- Intense = 100%
+- Moderate = 50%
+- Mild = 30%
+- NA 
+
+corticomedullary_enhancement_relative_to_renal_cortex_homogeneity: how does homogenous is the signal:
+
+- Homogeneous 
+- Slightly heterogeneous
+- Heterogeneous
+- NA
+
+- null if not mentioned
+
 delayed_enhancement: does the lesion have delayed enhancement. One of:
 - plateau (+/-10%)
 - progressive (>10%)
 - washout (<10%)
 - NA 
 - null if not mentioned
-
 
 fat_poor_aml_suspected: Is the lesion suspected to be fat poor aml (angiomyolipoma)?:
 - Yes
