@@ -97,11 +97,9 @@ prompt_ui <-  fluidPage(
             content = HTML(paste("Context window is the working memory of the LLM.",
               "Basic overall statics evaulating the prompt. <b>Objects</b> refer to schema bjects and can be through of rows in the database. ",
               "<b>Halucinated</b> objects, refer to objects in the LLM response not present in the ground truth. <b>Omissions</b> are the opposite.",
-              "<b>Accuracy</b> is defined by the formula (TP + TN) / (TP + TN + FP + FN) and is a good representation of how well the prompt is doing",
-              "from a completely balanced perspective (this is the only metric that rewards true negatives). <b>F1 Score</b> is defined by the formula 2TP / (2TP + FP +FN) and represents",
-              "the harmonic mean of precision and recall. F1 is a good metric for classification tasks where you want to identify prositive finidngs (ie: PE identification algoritm).",
-              "Of note, for all of these fomulas",
-              "hallucinations count as a FP in every property and omissions count as a FN in every property. However, for the variable metrics to the right, only shared objects are", 
+              "<b>Accuracy</b> is defined by the formula (True LLM Output Values) / (All LLM Output Values) and is a representation of how correct the output is",
+              "- including empty values. <b>Jaccard Similarity</b> ignores all empty values, then defined by (True LLM Output values) / (All Unique Values in LLM Output + Ground Truth) and represents",
+              "the similarity between two datasets. Hallucinated and Omitted Objects count as a false in every property for overall metrics. However, for the variable metrics to the right, only shared objects are", 
               "factored to truly asses each property."
               
             )
