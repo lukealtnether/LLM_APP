@@ -261,13 +261,13 @@ prompt_server <- function(input, output, session) {
     #summary of fp and fn based on na in the diff details
     fp_fn_summary <- diff_details %>%
       mutate(
-        FP = ifelse(!is.na(values.x), 1, 0),
-        FN = ifelse(is.na(values.x), 1, 0)
+        JA = ifelse(!is.na(values.x), 1, 0),
+        JB = ifelse(!is.na(values.y), 1, 0)
       ) %>%
       group_by(var.x) %>%
       summarise(
-        FP = sum(FP),
-        FN = sum(FN),
+        JA = sum(JA),
+        JB = sum(JB),
         .groups = "drop"
       )
     
@@ -301,7 +301,7 @@ prompt_server <- function(input, output, session) {
         values_transform = list(values.x = as.character)
       )
     
-    #now remove the incorrect valuess to only get the correct answers from the LLM
+    #now remove the incorrect values to only get the correct answers from the LLM
     correct_shared_df <- shared_df %>%
       anti_join(wrong_obs, by = c(by_vars, "var.x"))
     
@@ -324,11 +324,10 @@ prompt_server <- function(input, output, session) {
       left_join(fp_fn_summary, by = c("variable" = "var.x")) %>%
       left_join(tp_tn_summary, by = c("variable" = "var.x")) %>%
       rename(Variable = variable) %>%
-      mutate(across(c(TP, TN, FP, FN), ~ ifelse(is.na(.), 0, .))) %>%
-      mutate(Accuracy = paste0(round(100*((TP + TN) / (TP + TN + FP + FN)), 2),"%")) %>%
-      mutate(F1 = round((2*TP/(2*TP + FP + FN)), 2)) %>%
-      # mutate(Jaccard = round((TP/(TP + FP + FN)), 2)) %>%
-      select(-TP, -TN, -FP, -FN, -n)
+      mutate(across(c(TP, TN, JA, JB), ~ ifelse(is.na(.), 0, .))) %>%
+      mutate(Accuracy = paste0(round(100*((TP + TN) / (nrow(llm_output))), 2),"%")) %>%
+      mutate(Jaccard = round((TP/(TP + JA + JB)), 2)) %>%
+      select(-TP, -TN, -JA, -JB, -n)
     
     llm_obs <- llm_run_filtered %>%
       filter(!if_any(all_of(by_vars), is.na)) %>%
@@ -349,22 +348,19 @@ prompt_server <- function(input, output, session) {
     shared_obs <- comparison$frame.summary$n.shared[1]
     total_tp <- sum(tp_tn_summary$TP)
     total_tn <- sum(tp_tn_summary$TN)
-    total_fp <- (sum(fp_fn_summary$FP) + hallucinations*nrow(total_differences))
-    total_fn <- (sum(fp_fn_summary$FN) + omissions*nrow(total_differences))
-    total_accuracy <- paste0(round((100*(total_tp + total_tn) / (total_tp + total_tn +total_fp + total_fn)), 2),"%")
-    total_f1 <- round((2*total_tp/(2*total_tp + total_fp +total_fn)), 2)
-    total_jaccard <- round((total_tp/(total_tp + total_fp +total_fn)), 2)
+    total_ja <- (sum(fp_fn_summary$JA) + omissions*nrow(total_differences))
+    total_jb <- (sum(fp_fn_summary$JB) + hallucinations*nrow(total_differences))
+    total_accuracy <- paste0(round((100*(total_tp + total_tn) / (nrow(llm_output)*ncol(llm_output))), 2),"%")
+    total_jaccard <- round((total_tp/(total_tp + total_ja + total_jb)), 2)
   
 
     #display tables
     rv$summary_table <- data.frame(
       Metric = c("Average Time", "LLM objects", "True objects", "Hallucinated objects", "Omitted objects", "Compared objects",
-        "Accuracy", "F1 Score"
-        # , "Jaccard Similarity"
+        "Accuracy", "Jaccard Similarity"
         ),
       Value = as.character(c(avg_time, llm_obs, key_obs, hallucinations, omissions, shared_obs,
-        total_accuracy, total_f1
-        # , total_jaccard
+        total_accuracy, total_jaccard
         )),
       stringsAsFactors = FALSE
     )
