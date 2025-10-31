@@ -19,35 +19,105 @@ prompt_ui <-  fluidPage(
     
     fluidRow(
       column(
-        width = 8,
+        width = 6,
         fluidRow(
           column(6, fileInput(("json_file"), "Upload JSON Schema (.json)")),
           column(6, uiOutput("example_file_ui"))
         ),
         tags$hr(),
-        textInput(("id_column"), "ID Column", value = ""),
         fluidRow(
-          column(3, textInput(("llm_address"), "BIOHPC node", value = "172.18.227.")),
-          column(3, selectInput(("llm_model"), "Model", choices = c("Need to specify IP address first"))),
-          column(3, textInput(("llm_context"), "Context window", value = "4000")),
-          column(3, uiOutput(("word_count_info")))
+          column(
+            4,
+            selectInput(
+              "id_column",
+              label = list(
+                "ID Column",
+                bsButton(
+                  "id_info",
+                  label = "",
+                  icon = icon("info", lib = "font-awesome"),
+                  style = "default",
+                  size = "extra-small"
+                )
+              ),
+              choices = "",
+              selected = ""
+            ),
+            bsPopover(
+              "id_info", "More Information", 
+              content = HTML(paste(
+                "Only applicable for <b>array</b> schema.",
+                "For analysis, within each example, <b>objects</b> must be compared by an id column.",
+                "<b>Objects</b> will otherwise be compared by row order - which may differ from the ground truth vs LLM output."
+              )),
+              "right", trigger = "click",
+              options = list(container = "body")
+            )
+          ),
+          column(4, textInput(("llm_context"), label = list("Context window",
+            bsButton("context_info", label = "",
+              icon = icon("info", lib = "font-awesome"),
+              style = "default", size = "extra-small")
+            ), value = "4000")),
+          bsPopover("context_info", "More Information", 
+            content = HTML(paste("Context window is the working memory of the LLM.",
+              "Each query consists of a prompt + schema + example. A token is the smalled language unit the LLM understands. ",
+              "An estimated token count is given based on prompt word count and longest example, with ~0.75 tokens/word. Context widows are commonly rounded to the thousands.",
+              "Context windows that are too small will truncate the example/prompt. Context windows that are too large can lead to inneffecient LLM response times."
+            )
+            ),
+            "right", trigger = "click",
+            options = list(container = "body")
+          ),
+          column(2, uiOutput(("word_count_info")))
+        ),
+        fluidRow(
+          column(3, textInput(("llm_address"), "IP Address", value = "172.18.227.86")),
+          column(5, selectInput(("llm_model"), "Model", choices = c("Need to specify IP address first")))
         )
       ),
       
       column(
-        width = 4,
+        width = 6,
         column(width = 6,
-          h4("Average time"),
-          verbatimTextOutput(("avg_time")),
-          h4("Observations"),
-          tableOutput(("obs_acc"))),
+          h4(list("Overall Statistics",
+            bsButton("o_stat_info", label = "",
+              icon = icon("info", lib = "font-awesome"),
+              style = "default", size = "extra-small")
+            )),
+          tableOutput(("obs_acc")),
+          plotOutput("venn_plot", height = "250px")
+          ),
         column(width = 6,
-          h4("Variable Accuracy"),
+          h4(list("Variable Statistics",
+            bsButton("v_stat_info", label = "",
+              icon = icon("info", lib = "font-awesome"),
+              style = "default", size = "extra-small")
+            )),
           tableOutput(("prop_acc")),
-          h4("Total Accuracy"),
-          verbatimTextOutput(("total_accuracy"))
+          bsPopover("o_stat_info", "More Information", 
+            content = HTML(paste("Context window is the working memory of the LLM.",
+              "Basic overall statics evaulating the prompt. <b>Objects</b> refer to schema bjects and can be through of rows in the database. ",
+              "<b>Halucinated</b> objects, refer to objects in the LLM response not present in the ground truth. <b>Omissions</b> are the opposite.",
+              "<b>Accuracy</b> is defined by the formula (True LLM Output Values) / (All LLM Output Values) and is a representation of how correct the output is",
+              "- including empty values. <b>Jaccard Similarity</b> ignores all empty values, then defined by (True LLM Output values) / (All Unique Values in LLM Output + Ground Truth) and represents",
+              "the similarity between two datasets. Hallucinated and Omitted Objects count as a false in every property for overall metrics. However, for the variable metrics to the right, only shared objects are", 
+              "factored to truly asses each property."
+              
+            )
+            ),
+            "right", trigger = "click",
+            options = list(container = "body")
+          ),
+          bsPopover("v_stat_info", "More Information", 
+            content = HTML(paste("Stats are given for each object property. Formulas are the same as for the total statistics. However,",
+              "only shared objects are factored to give a better representation of each property decription."
+            )
+            ),
+            "right", trigger = "click",
+            options = list(container = "body")
+          ),
           )
-        
       )
     ),
     
@@ -77,7 +147,7 @@ prompt_ui <-  fluidPage(
         verbatimTextOutput(("hallucinations_ex")),
         h4("LLM Output"),
         tableOutput(("llm_output")),
-        h4("Key"),
+        h4("Ground Truth"),
         tableOutput(("key_output"))
       )
     ),

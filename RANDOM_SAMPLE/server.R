@@ -1,13 +1,30 @@
 random_server <- function(input, output, session) {
   nested_colnames <- reactiveVal(NULL)
   progress_status <- reactiveVal("Waiting for submission...")
-  rv <- reactiveValues(output_data = NULL)
+  rv <- reactiveValues(output_data = NULL,
+    manual_data = NULL)
   batch_data <- reactiveVal()
   batch_index <- reactiveVal(1)
   collapsed_batch_prompt <- reactiveVal()
   sampled_n <- reactiveVal()
   full_batch_data <- reactiveVal()
+
   
+  output$validation_instructions <- renderUI({HTML("After downloading your sample run, you must manually validate to get your estimated database statistics.
+    The method by which you evaluate your sample is dependednt on the user and the task at hand. Suggested methods for 
+    manual validation are as follows: <br> <br>
+    
+    1) Run your random sample on a suffeciently large sample size usually ~ 100 examples. <br><br>
+    
+    2) Download the run as well as the manual entry template. <br><br>
+    
+    3) Two individuals will then indpendedntly input ground truth using the manual entry app. <br><br>
+    
+    4) Input the two manual entries into the validation app and resolve any ground truth discrepencies <br><br>
+    
+    5) Input the LLM run and resolve any discrepencies as true or false values.")
+    
+  })
   
   get_ollama_models <- function(ip) {
     url <- paste0("http://", ip, ":11434/api/tags")
@@ -25,21 +42,11 @@ random_server <- function(input, output, session) {
   observeEvent(input$batch_address, {
     models <- get_ollama_models(input$batch_address)
     if (is.null(models)) {
-      updateSelectInput(session, "batch_model", choices = c("Connection failed or no models found"))
+      updateSelectInput(session, "batch_model", choices = c("Connection failed"))
     } else {
       updateSelectInput(session, "batch_model", choices = models, selected = models[1])
     }
   })
-  
-
-  list_files <- list.files("example prompt and schema files",recursive = T)
-  updateSelectInput(session, "select_schema", 
-                    choices = c("Please select" = "", list_files[grepl("(?i)schema", list_files)]),
-                    selected = "")
-  updateSelectInput(session, "select_prompt", 
-                    choices = c("Please select" = "", list_files[grepl("(?i)prompt", list_files)]),
-                    selected = "")
-  
   
   observeEvent(input$select_schema, {
     # Check if a schema file is selected, then send the value to input$batch_json
@@ -51,8 +58,6 @@ random_server <- function(input, output, session) {
     } 
   })
     
-  
-  
   
   observeEvent(input$batch_xlsx, {
     req(input$batch_xlsx)
@@ -71,12 +76,9 @@ random_server <- function(input, output, session) {
     
     # Try reading the file
     tryCatch({
-      #df <- readxl::read_excel(input$batch_xlsx$datapath, col_names = FALSE)
-      df <- readxl::read_excel(input$batch_xlsx$datapath)
-      
+      df <- read_excel(input$batch_xlsx$datapath, col_names = TRUE)
       if (ncol(df) >= 1) {
         full_batch_data(df)
-        
         updateSelectInput(session, "input_column", choices = names(df), selected = names(df)[1])
         
         #batch_index(1)
@@ -117,8 +119,6 @@ random_server <- function(input, output, session) {
     n <- nrow(data)
     sample_n <- sampled_n()
     if (!is.null(sample_n) && sample_n > 0 && sample_n < n) {
-      # set.seed(1)  
-      #batch_data(sample(data, sample_n))
       batch_data(data[sample(n, sample_n),])
     } else {
       batch_data(data)
@@ -196,10 +196,9 @@ random_server <- function(input, output, session) {
     seed_num <- 1234
     
     # Create a working dataframe
-    #input_data <- tibble(!!input_text_column := batch_data())
+    
     input_data <- batch_data()
-    # test[[paste0(output_column, "_time")]] <- numeric(nrow(test))
-    # 
+    
     messages_list <- list(list(role = "system", content = full_prompt))
     
     withProgress(message = "Running model inference...", value = 0, {
@@ -234,16 +233,6 @@ random_server <- function(input, output, session) {
           input_data[[output_column]][i] <- list(parsed$data)
           input_data[[paste0(output_column, "_time")]][i] <- duration_sec
         }
-        
-        # duration <- as.numeric(difftime(Sys.time(), start_time, units = "secs"))
-        # if (!is.null(result)) {
-        #   parsed <- tryCatch(fromJSON(result), error = function(e) NULL)
-        #   if (!is.null(parsed$data)) {
-        #     test[[output_column]][i] <- list(as_tibble(parsed$data))
-        #   }
-        # }
-        # 
-        # test[[paste0(output_column, "_time")]][i] <- duration
       }
     })
     
@@ -259,9 +248,8 @@ random_server <- function(input, output, session) {
           select(-all_of(input$batch_model))
       )
     
-    
-    
     rv$output_data <- output_data
+  
     progress_status("Model run complete. You may now download results.")
   })
   
@@ -269,15 +257,16 @@ random_server <- function(input, output, session) {
     filename = function() paste0(input$filename_batch,".xlsx"),
     content = function(file) {
       req(rv$output_data)
-      
-      # output_column <- input$batch_model
-      # 
-      # # Unnest the nested model output
-      # unnested_df <- rv$test %>%
-      #   unnest(cols = all_of(output_column))
       unnested_df <- rv$output_data
-      # Write to Excel
-      writexl::write_xlsx(unnested_df, path = file)
+      write_xlsx(unnested_df, path = file)
+    }
+  )
+  
+  output$download_manual <- downloadHandler(
+    filename = function() paste0(input$filename_manual,".xlsx"),
+    content = function(file) {
+      req(batch_data())
+      write_xlsx(batch_data(), path = file)
     }
   )
 }
