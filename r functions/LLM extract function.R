@@ -32,14 +32,12 @@ llm_extract <- function(
     context_window = 4000,
     timeout_seconds = 20
 ) {
-<<<<<<< HEAD
-=======
+
   prompt_txt <- readLines(prompt_path, warn = FALSE) %>% paste(collapse = "\n")
   schema_r <- readLines(schema_path, warn = FALSE, encoding = 'UTF-8') %>%
     paste(collapse = "\n") %>%
     fromJSON(simplifyVector = FALSE)
->>>>>>> demo_1
-  
+
   prompt_and_schema <- load_prompt_and_schema(prompt_path, schema_path)
   
   prompt_txt <- prompt_and_schema$prompt_txt
