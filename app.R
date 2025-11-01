@@ -50,12 +50,13 @@ app_theme <- bs_theme(
   base_font = font_google("Fira Code"),
   bg = "#002B36",
   fg = "#EEE8D5",
-  primary = "#2AA198"
+  primary = "#2AA198",
+  secondary = "#586e75"
 )
 
 ui <- navbarPage(
   title = "",
-  theme = app_theme,   # <-- Apply the theme here
+  theme = app_theme,   
   
   tags$head(
     tags$style(HTML("
@@ -100,9 +101,42 @@ ui <- navbarPage(
         font-style: italic;
         margin-top: 8px;
       }
+      
+      /* Selectize input box styling - uses CSS variables from bs_theme */
+      .selectize-input,
+      .selectize-control.single .selectize-input {
+        background: var(--bs-body-bg) !important;
+        color: var(--bs-body-color) !important;
+        border-color: var(--bs-secondary) !important;
+      }
+      
+      .selectize-input.focus {
+        border-color: var(--bs-primary) !important;
+      }
+      
+      /* Selectize dropdown styling */
+      .selectize-dropdown {
+        background: var(--bs-body-bg) !important;
+        color: var(--bs-body-color) !important;
+        border-color: var(--bs-primary) !important;
+      }
+      
+      /* Dropdown options */
+      .selectize-dropdown .option {
+        background: var(--bs-body-bg) !important;
+        color: var(--bs-body-color) !important;
+      }
+      
+      /* Hovered option */
+      .selectize-dropdown .option:hover,
+      .selectize-dropdown .active {
+        background: var(--bs-primary) !important;
+        color: var(--bs-body-bg) !important;
+      }
+      
     "))
   ),
-  
+
   tabPanel("HOME", homepage_ui),
   tabPanel("Create Schema", json_ui),
   tabPanel("Enter Example", examples_ui),
