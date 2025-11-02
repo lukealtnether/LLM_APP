@@ -6,6 +6,7 @@ json_ui <- fluidPage(
       textInput("description", "Description"),
       
       tags$div(
+        class = "form-label",
         tags$label("Schema Type"),
         tooltip(
           span(icon("circle-info", lib = "font-awesome")),
@@ -36,6 +37,7 @@ json_ui <- fluidPage(
       conditionalPanel(
         condition = "input['prop_type'] != ''",
         tags$div(
+          class = "form-label",
           tags$label("Enumerations (one per line)"),
           tooltip(
             span(icon("circle-info", lib = "font-awesome"), style = "margin-left: 5px; cursor: help;"),
@@ -49,6 +51,7 @@ json_ui <- fluidPage(
       conditionalPanel(
         condition = "input['prop_type'] == 'string'",
         tags$div(
+          class = "form-label",
           tags$label("String Format"),
           tooltip(
             span(icon("circle-info", lib = "font-awesome"), style = "margin-left: 5px; cursor: help;"),
@@ -77,6 +80,7 @@ json_ui <- fluidPage(
         ),
         
         tags$div(
+          class = "form-label",
           tags$label("Pattern (regex)"),
           tooltip(
             span(icon("circle-info", lib = "font-awesome"), style = "margin-left: 5px; cursor: help;"),
@@ -109,7 +113,7 @@ json_ui <- fluidPage(
       verbatimTextOutput("json_preview"),
       tags$br(),
       textInput("filename", "Enter file name (without extension):", value = ""),
-      downloadButton("download_json", "Download JSON")
+      downloadButton("download_json", "Download JSON", class = "btn btn-warning")
     )
   )
 )

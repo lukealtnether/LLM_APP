@@ -1,160 +1,113 @@
-prompt_ui <-  fluidPage(
-    useShinyjs(),
-    titlePanel("Prompt Engineering"),
-    
-    tags$style(HTML("
-      #example_check {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        max-height: 400px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 8px;
-        background-color: #f9f9f9;
-        border-radius: 4px;
-      }
-    ")),
-    
-    tags$hr(),
-    
-    fluidRow(
-      column(
-        width = 6,
-        fluidRow(
-          column(6, fileInput(("json_file"), "Upload JSON Schema (.json)")),
-          column(6, uiOutput("example_file_ui"))
-        ),
-        tags$hr(),
-        fluidRow(
-          column(
-            4,
-            selectInput(
-              "id_column",
-              label = list(
-                "ID Column",
-                bsButton(
-                  "id_info",
-                  label = "",
-                  icon = icon("info", lib = "font-awesome"),
-                  style = "default",
-                  size = "extra-small"
-                )
-              ),
-              choices = "",
-              selected = ""
-            ),
-            bsPopover(
-              "id_info", "More Information", 
-              content = HTML(paste(
-                "Only applicable for <b>array</b> schema.",
-                "For analysis, within each example, <b>objects</b> must be compared by an id column.",
-                "<b>Objects</b> will otherwise be compared by row order - which may differ from the ground truth vs LLM output."
-              )),
-              "right", trigger = "click",
-              options = list(container = "body")
-            )
-          ),
-          column(4, textInput(("llm_context"), label = list("Context window",
-            bsButton("context_info", label = "",
-              icon = icon("info", lib = "font-awesome"),
-              style = "default", size = "extra-small")
-            ), value = "4000")),
-          bsPopover("context_info", "More Information", 
-            content = HTML(paste("Context window is the working memory of the LLM.",
-              "Each query consists of a prompt + schema + example. A token is the smalled language unit the LLM understands. ",
-              "An estimated token count is given based on prompt word count and longest example, with ~0.75 tokens/word. Context widows are commonly rounded to the thousands.",
-              "Context windows that are too small will truncate the example/prompt. Context windows that are too large can lead to inneffecient LLM response times."
-            )
-            ),
-            "right", trigger = "click",
-            options = list(container = "body")
-          ),
-          column(2, uiOutput(("word_count_info")))
-        ),
-        fluidRow(
-          column(3, textInput(("llm_address"), "IP Address", value = "172.18.227.86")),
-          column(5, selectInput(("llm_model"), "Model", choices = c("Need to specify IP address first")))
-        )
+prompt_ui <- fluidPage(
+  useShinyjs(),
+  titlePanel("Prompt Engineering"),
+  tags$hr(),
+  fluidRow(
+    column(
+      width = 6,
+      fluidRow(
+        column(6, fileInput("json_file", "Upload JSON Schema (.json)")),
+        column(6, uiOutput("example_file_ui"))
       ),
-      
-      column(
-        width = 6,
-        column(width = 6,
-          h4(list("Overall Statistics",
-            bsButton("o_stat_info", label = "",
-              icon = icon("info", lib = "font-awesome"),
-              style = "default", size = "extra-small")
-            )),
-          tableOutput(("obs_acc")),
-          plotOutput("venn_plot", height = "250px")
-          ),
-        column(width = 6,
-          h4(list("Variable Statistics",
-            bsButton("v_stat_info", label = "",
-              icon = icon("info", lib = "font-awesome"),
-              style = "default", size = "extra-small")
-            )),
-          tableOutput(("prop_acc")),
-          bsPopover("o_stat_info", "More Information", 
-            content = HTML(paste("Context window is the working memory of the LLM.",
-              "Basic overall statics evaulating the prompt. <b>Objects</b> refer to schema bjects and can be through of rows in the database. ",
-              "<b>Halucinated</b> objects, refer to objects in the LLM response not present in the ground truth. <b>Omissions</b> are the opposite.",
-              "<b>Accuracy</b> is defined by the formula (True LLM Output Values) / (All LLM Output Values) and is a representation of how correct the output is",
-              "- including empty values. <b>Jaccard Similarity</b> ignores all empty values, then defined by (True LLM Output values) / (All Unique Values in LLM Output + Ground Truth) and represents",
-              "the similarity between two datasets. Hallucinated and Omitted Objects count as a false in every property for overall metrics. However, for the variable metrics to the right, only shared objects are", 
-              "factored to truly asses each property."
-              
+      tags$hr(),
+      fluidRow(
+        column(
+          4,
+          tags$div(
+            class = "form-label",
+            tags$label("ID Column"),
+            tooltip(
+              span(icon("circle-info", lib = "font-awesome")),
+              "Only applicable for array schema. For analysis, within each example, objects must be compared by an id column. Objects will otherwise be compared by row order - which may differ from the ground truth vs LLM output.",
+              placement = "right"
             )
-            ),
-            "right", trigger = "click",
-            options = list(container = "body")
           ),
-          bsPopover("v_stat_info", "More Information", 
-            content = HTML(paste("Stats are given for each object property. Formulas are the same as for the total statistics. However,",
-              "only shared objects are factored to give a better representation of each property decription."
+          selectInput("id_column", NULL, choices = "", selected = "")
+        ),
+        column(
+          4,
+          tags$div(
+            class = "form-label",
+            tags$label("Context window"),
+            tooltip(
+              span(icon("circle-info", lib = "font-awesome")),
+              "Context window is the working memory of the LLM. Each query consists of a prompt + schema + example. A token is the smallest language unit the LLM understands. An estimated token count is given based on prompt word count and longest example, with ~0.75 tokens/word. Context windows are commonly rounded to the thousands. Context windows that are too small will truncate the example/prompt. Context windows that are too large can lead to inefficient LLM response times.",
+              placement = "right"
             )
-            ),
-            "right", trigger = "click",
-            options = list(container = "body")
           ),
-          )
+          textInput("llm_context", NULL, value = "4000")
+        ),
+        column(2, uiOutput("word_count_info"))
+      ),
+      fluidRow(
+        column(3, textInput("llm_address", "IP Address", value = "172.18.227.86")),
+        column(5, selectInput("llm_model", "Model", choices = c("Need to specify IP address first")))
       )
     ),
     
-    tags$hr(),
-    
-    fluidRow(
-      column(
-        width = 4,
-        h4("Prompt"),
-        uiOutput(("dynamic_prompt_inputs")),
-        actionButton(("submit_query"), "Submit", class = "btn btn-success")
-      ),
-      column(
-        width = 5,
-        h4("Example"),
-        verbatimTextOutput(("example_check")),
-        fluidRow(
-          column(6, actionButton(("previous_button"), label = NULL, icon = icon("arrow-left"), style = "width: 100%;")),
-          column(6, actionButton(("next_button"), label = NULL, icon = icon("arrow-right"), style = "width: 100%;"))
+    column(
+      width = 6,
+      fluidRow(  
+        column(
+          width = 6,
+          h4(
+            tooltip(
+              span("Overall Statistics ", icon("circle-info", lib = "font-awesome")),
+              "Basic overall statistics evaluating the prompt. Objects refer to schema objects and can be thought of as rows in the database. Hallucinated objects refer to objects in the LLM response not present in the ground truth. Omissions are the opposite. Accuracy is defined by the formula (True LLM Output Values) / (All LLM Output Values) and is a representation of how correct the output is - including empty values. Jaccard Similarity ignores all empty values, then defined by (True LLM Output values) / (All Unique Values in LLM Output + Ground Truth) and represents the similarity between two datasets. Hallucinated and Omitted Objects count as a false in every property for overall metrics. However, for the variable metrics to the right, only shared objects are factored to truly assess each property.",
+              placement = "right"
+            )
+          ),
+          tableOutput("obs_acc"),
+          plotOutput("venn_plot", height = "200px")
+        ),
+        column(
+          width = 6,
+          h4(
+            tooltip(
+              span("Variable Statistics ", icon("circle-info", lib = "font-awesome")),
+              "Stats are given for each object property. Formulas are the same as for the total statistics. However, only shared objects are factored to give a better representation of each property description.",
+              placement = "right"
+            )
+          ),
+          tableOutput("prop_acc")
         )
-      ),
-      column(
-        width = 3,
-        h4("Differences"),
-        tableOutput(("differences_df")),
-        verbatimTextOutput(("omissssion_ex")),
-        verbatimTextOutput(("hallucinations_ex")),
-        h4("LLM Output"),
-        tableOutput(("llm_output")),
-        h4("Ground Truth"),
-        tableOutput(("key_output"))
+      )  
+    )
+  ),
+  
+  tags$hr(),
+  
+  fluidRow(
+    column(
+      width = 4,
+      h4("Prompt"),
+      uiOutput("dynamic_prompt_inputs"),
+      actionButton("submit_query", "Submit", class = "btn btn-success")
+    ),
+    column(
+      width = 5,
+      h4("Example"),
+      verbatimTextOutput("example_check"),
+      fluidRow(
+        column(6, actionButton("previous_button", label = NULL, icon = icon("arrow-left"), style = "width: 100%;")),
+        column(6, actionButton("next_button", label = NULL, icon = icon("arrow-right"), style = "width: 100%;"))
       )
     ),
-    
-    tags$hr(),
-    
-    textInput(("filename_prompt"), "Enter file name (without exteion):", value = ""),
-    downloadButton(("download_prompt"), "Download prompt"),
-  )
-
+    column(
+      width = 3,
+      h4("Differences"),
+      tableOutput("differences_df"),
+      verbatimTextOutput("omissssion_ex"),
+      verbatimTextOutput("hallucinations_ex"),
+      h4("LLM Output"),
+      tableOutput("llm_output"),
+      h4("Ground Truth"),
+      tableOutput("key_output")
+    )
+  ),
+  
+  tags$hr(),
+  
+  textInput("filename_prompt", "Enter file name (without extension):", value = ""),
+  downloadButton("download_prompt", "Download prompt")
+)

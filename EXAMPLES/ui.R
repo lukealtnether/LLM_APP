@@ -1,74 +1,53 @@
-examples_ui <-  
-  fluidPage(
-    useShinyjs(),
-    titlePanel("Example Data Entry"),
-    
-    tags$style(HTML("
-      #example_text {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        max-height: 400px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 8px;
-        background-color: #f9f9f9;
-        border-radius: 4px;
-      }
-    ")),
-    
-    fluidRow(
-      # Left column
-      column(
-        width = 8,
-        fluidRow(
-          column(4, fileInput(("schema_file"), "Upload JSON Schema (.json/.txt)")),
-          column(4, fileInput(("empty_examples"), label = list("Upload Examples (.xlsx)",
-            bsButton("example_1_info", label = "",
-              icon = icon("info", lib = "font-awesome"),
-              style = "default", size = "extra-small")
+examples_ui <- fluidPage(
+  useShinyjs(),
+  titlePanel("Example Data Entry"),
+  fluidRow(
+    # Left column
+    column(
+      width = 8,
+      fluidRow(
+        column(4, fileInput("schema_file", "Upload JSON Schema (.json/.txt)")),
+        column(4, 
+          tags$div(
+            class = "form-label",
+            tags$label("Upload Examples (.xlsx)"),
+            tooltip(
+              span(icon("circle-info", lib = "font-awesome")),
+              "Input at least 20 representative examples as the xlsx file. Place examples in the first column of an excel file without column names (data in A1:An with n examples).",
+              placement = "right"
             )
-            )),
-          column(4, uiOutput("example_col_picker"))
           ),
-        bsPopover("example_1_info", "More Information", 
-          content = HTML(paste("Input at least <b>20</b> representative examples as the xlsx file.",
-            "Place examples in the first column of an excel file without columns names (data in <b>A1:An</b> with <b>n</b> examples)."
-          )),
-          "right", trigger = "click",
-          options = list(container = "body")
+          fileInput("empty_examples", NULL)
         ),
-        h4("Example Text"),
-        verbatimTextOutput(("example_text")),
-        fluidRow(
-          column(6, actionButton(("previous_button"), label = NULL, icon = icon("arrow-left"), style = "width: 100%;")),
-          column(6, actionButton(("next_button"), label = NULL, icon = icon("arrow-right"), style = "width: 100%;"))
-        ),
-        textOutput(("example_counter")),
-        tags$hr(),
-        textInput(("filename_xlsx"), "Enter file name (without exteion):", value = ""),
-        downloadButton(("download_xlsx"), "Download .xslx")
+        column(4, uiOutput("example_col_picker"))
       ),
-      
-      # Right column
-      column(
-        width = 4,
-        uiOutput(("dynamic_form")),
-        actionButton(("add_row"), "Add Row", class = "btn btn-success"),
-        actionButton(("remove_row"), "Remove Last Row", class = "btn btn-danger"),
-        h4(list("Preview", 
-          bsButton("preview_info", label = "",
-            icon = icon("info", lib = "font-awesome"),
-            style = "default", size = "extra-small")
-          )),
-        bsPopover("preview_info", "More Information", 
-          content = HTML(paste("Input and validation logic for the given example.",
-            "To ensure that the accuracy calculations in the next step is valid, all responses must conform to the schema."
-          )),
-          "right", trigger = "click",
-          options = list(container = "body")
-        ),
-        verbatimTextOutput(("data_output"))
-      )
+      h4("Example Text"),
+      verbatimTextOutput("example_text"),
+      fluidRow(
+        column(6, actionButton("previous_button", label = NULL, icon = icon("arrow-left"), style = "width: 100%;")),
+        column(6, actionButton("next_button", label = NULL, icon = icon("arrow-right"), style = "width: 100%;"))
+      ),
+      textOutput("example_counter"),
+      tags$hr(),
+      textInput("filename_xlsx", "Enter file name (without extension):", value = ""),
+      downloadButton("download_xlsx", "Download .xlsx", class = "btn btn-warning")
+    ),
+    
+    # Right column
+    column(
+      width = 4,
+      uiOutput("dynamic_form"),
+      actionButton("add_row", "Add Row", class = "btn btn-success"),
+      actionButton("remove_row", "Remove Last Row", class = "btn btn-danger"),
+      tags$hr(),
+      h4(
+        tooltip(
+          span("Preview ", icon("circle-info", lib = "font-awesome")),
+          "Input and validation logic for the given example. To ensure that the accuracy calculations in the next step are valid, all responses must conform to the schema.",
+          placement = "right"
+        )
+      ),
+      verbatimTextOutput("data_output")
     )
   )
-
+)
