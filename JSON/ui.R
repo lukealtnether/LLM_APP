@@ -1,5 +1,6 @@
 json_ui <- fluidPage(
   titlePanel("JSON Schema Creator"),
+  tags$hr(),
   fluidRow(
     column(4,
       textInput("title", "Schema Title"),

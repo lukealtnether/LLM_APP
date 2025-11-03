@@ -1,4 +1,14 @@
 prompt_ui <- fluidPage(
+  tags$style(HTML("
+  #example_check {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  }
+  .shiny-plot-output {
+    background-color: #001e24 !important;
+  }
+  
+    ")),
   useShinyjs(),
   titlePanel("Prompt Engineering"),
   tags$hr(),
@@ -49,7 +59,7 @@ prompt_ui <- fluidPage(
       width = 6,
       fluidRow(  
         column(
-          width = 6,
+          width = 5,
           h4(
             tooltip(
               span("Overall Statistics ", icon("circle-info", lib = "font-awesome")),
@@ -58,10 +68,16 @@ prompt_ui <- fluidPage(
             )
           ),
           tableOutput("obs_acc"),
-          plotOutput("venn_plot", height = "200px")
-        ),
+          card(
+            style = "border: none; box-shadow: none; width: 100%;",
+            card_body(
+              padding = 0,
+              plotOutput("venn_plot", fill = TRUE, height = "100%"),
+              min_height = 250
+            )
+          )),
         column(
-          width = 6,
+          width = 7,
           h4(
             tooltip(
               span("Variable Statistics ", icon("circle-info", lib = "font-awesome")),
@@ -74,9 +90,7 @@ prompt_ui <- fluidPage(
       )  
     )
   ),
-  
   tags$hr(),
-  
   fluidRow(
     column(
       width = 4,
@@ -105,9 +119,7 @@ prompt_ui <- fluidPage(
       tableOutput("key_output")
     )
   ),
-  
   tags$hr(),
-  
   textInput("filename_prompt", "Enter file name (without extension):", value = ""),
-  downloadButton("download_prompt", "Download prompt")
+  downloadButton("download_prompt", "Download prompt", class = "btn btn-warning")
 )

@@ -354,20 +354,23 @@ prompt_server <- function(input, output, session) {
     total_jaccard <- round((total_tp/(total_tp + total_ja + total_jb)), 2)
     
     venn_list <- list(
-      "Ground Truth" = 1:(total_tp + total_ja),  
+      "Truth" = 1:(total_tp + total_ja),  
       "LLM" = (total_ja + 1):(total_ja + total_tp + total_jb)  
     )
+  
     
-    # Create the Venn diagram
-    rv$venn_plot <- ggvenn(venn_list, 
-      fill_color = c("blue", "red"),
-      fill_alpha = 0.5,
+    rv$venn_plot <- ggvenn(venn_list,
+      fill_color = c("#2AA198", "#002b33"),  # Use your theme colors (primary, danger)
+      fill_alpha = 0.3,
       stroke_size = 1,
+      stroke_color = "#EEE8D5",
       set_name_size = 6,
       text_size = 8,
       show_percentage = FALSE,
-      auto_scale = TRUE)
-  
+      auto_scale = TRUE,
+      text_color = "#EEE8D5",
+      set_name_color = "#EEE8D5"
+    )
 
     #display tables
     rv$summary_table <- data.frame(
@@ -424,7 +427,9 @@ prompt_server <- function(input, output, session) {
   output$venn_plot <- renderPlot({
     req(rv$venn_plot)
     rv$venn_plot
-  })
+    
+  },
+    bg = "transparent")
   
   output$prop_acc <- renderTable({
     req(rv$variable_summary)

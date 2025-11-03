@@ -74,7 +74,7 @@ app_theme <- bs_theme(
   success = "#859900",   # Used for success messages and green buttons
   info = "#268BD2",      # Used for informational messages or outlines
   warning = "#d98816",   # Used for warning alerts and badges
-  danger = "#DC322F",    # Used for errors, red buttons, or danger alerts
+  danger = "#c92f2c",    # Used for errors, red buttons, or danger alerts
   
   # === NAVBAR ===
   "navbar-bg" = "#002b33",         # Navbar background color
@@ -170,6 +170,8 @@ ui <- navbarPage(
     font-style: italic;
     margin-top: 8px;
   }
+  
+  
   
   /* === Selectize Inputs === */
   .selectize-input,

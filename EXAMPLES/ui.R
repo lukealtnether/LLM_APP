@@ -1,6 +1,13 @@
 examples_ui <- fluidPage(
+  tags$style(HTML("
+  #example_text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+    ")),
   useShinyjs(),
   titlePanel("Example Data Entry"),
+  tags$hr(),
   fluidRow(
     # Left column
     column(
