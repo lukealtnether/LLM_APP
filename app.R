@@ -66,6 +66,8 @@ app_theme <- bs_theme(
   "h5-font-size" = "1rem",
   "h6-font-size" = ".77rem",
   
+  # ------------------------------------------------------------------------------
+
   # === COLORS ===
   bg = "#001e24",        # Background color (main page background)
   fg = "#EEE8D5",        # Foreground color (default text color)
@@ -75,7 +77,7 @@ app_theme <- bs_theme(
   info = "#268BD2",      # Used for informational messages or outlines
   warning = "#d98816",   # Used for warning alerts and badges
   danger = "#c92f2c",    # Used for errors, red buttons, or danger alerts
-  
+
   # === NAVBAR ===
   "navbar-bg" = "#002b33",         # Navbar background color
   "navbar-fg" = "#EEE8D5",         # Navbar text/icon color
@@ -83,7 +85,7 @@ app_theme <- bs_theme(
   "navbar-dark-color" = "#EEE8D5", # Navbar link color (dark mode)
   "navbar-light-active-color" = "#2AA198",  # Active link color (light)
   "navbar-dark-active-color" = "#2AA198",   # Active link color (dark)
-  
+
   # === INPUTS & FORMS ===
   "input-bg" = "#002b33",          # Input field background
   "input-color" = "#EEE8D5",       # Input text color
@@ -91,7 +93,7 @@ app_theme <- bs_theme(
   "input-placeholder-color" = "#93A1A1",  # Placeholder text color
   "input-focus-border-color" = "#2AA198", # Border when focused
   "input-focus-box-shadow" = "0 0 0 0.2rem rgba(42,161,152,0.25)", # Glow when focused
-  
+
   # === BUTTONS ===
   "btn-border-radius" = "0.4rem",     # Rounded corners on buttons
   "btn-padding-y" = "0.4rem",         # Vertical padding
@@ -100,21 +102,75 @@ app_theme <- bs_theme(
   "btn-primary-bg" = "#2AA198",       # Primary button background
   "btn-primary-color" = "#002b33",    # Primary button text color
   "btn-hover-bg" = "#26978E",         # Button hover color
-  
+
   # === CARDS, PANELS, AND CONTAINERS ===
   "card-bg" = "#002b33",             # Background of card components
   "card-border-color" = "#2AA198",   # Card outline/border color
   "card-color" = "#EEE8D5",          # Text color inside cards
-  
+
   # === TOOLTIP ===
   "tooltip-bg" = "#586E75",          # Tooltip background color
   "tooltip-color" = "#FDF6E3",       # Tooltip text color
-  
+
   # === TABLES ===
   "table-bg" = "#002b33",            # Table background
   "table-color" = "#EEE8D5",         # Table text
   "table-striped-bg" = "#073642",    # Alternating row color
   "table-hover-bg" = "#094C5F",      # Hover row color
+
+  # # UTSW--------------------------------------------------------------------------
+  # 
+  # # === COLORS ===
+  # bg = "#00355d",        # Background color (main page background)
+  # fg = "#FFFFFF",        # Foreground color (default text color)
+  # primary = "#009ee2",   # Primary brand color (buttons, links, highlights)
+  # secondary = "#009ee2", # Secondary color (used for accent elements)
+  # success = "#00ab4e",   # Used for success messages and green buttons
+  # info = "#268BD2",      # Used for informational messages or outlines
+  # warning = "#f26531",   # Used for warning alerts and badges
+  # danger = "#e52334",    # Used for errors, red buttons, or danger alerts
+  # 
+  # # === NAVBAR ===
+  # "navbar-bg" = "#004c97",         # Navbar background color
+  # "navbar-fg" = "#FFFFFF",         # Navbar text/icon color
+  # "navbar-light-color" = "#FFFFFF",# Navbar link color (light mode)
+  # "navbar-dark-color" = "#FFFFFF", # Navbar link color (dark mode)
+  # "navbar-light-active-color" = "#009ee2",  # Active link color (light)
+  # "navbar-dark-active-color" = "#009ee2",   # Active link color (dark)
+  # 
+  # # === INPUTS & FORMS ===
+  # "input-bg" = "#636466",          # Input field background
+  # "input-color" = "#FFFFFF",       # Input text color
+  # "input-border-color" = "#004c97",# Border around inputs
+  # "input-placeholder-color" = "#009ee2",  # Placeholder text color
+  # "input-focus-border-color" = "#009ee2", # Border when focused
+  # "input-focus-box-shadow" = "0 0 0 0.2rem rgba(42,161,152,0.25)", # Glow when focused
+  # 
+  # # === BUTTONS ===
+  # "btn-border-radius" = "0.4rem",     # Rounded corners on buttons
+  # "btn-padding-y" = "0.4rem",         # Vertical padding
+  # "btn-padding-x" = "0.9rem",         # Horizontal padding
+  # "btn-font-weight" = "500",          # Slightly bolder button text
+  # "btn-primary-bg" = "#2AA198",       # Primary button background
+  # "btn-primary-color" = "#002b33",    # Primary button text color
+  # "btn-hover-bg" = "#26978E",         # Button hover color
+  # 
+  # # === CARDS, PANELS, AND CONTAINERS ===
+  # "card-bg" = "#002b33",             # Background of card components
+  # "card-border-color" = "#2AA198",   # Card outline/border color
+  # "card-color" = "#EEE8D5",          # Text color inside cards
+  # 
+  # # === TOOLTIP ===
+  # "tooltip-bg" = "#586E75",          # Tooltip background color
+  # "tooltip-color" = "#FDF6E3",       # Tooltip text color
+  # 
+  # # === TABLES ===
+  # "table-bg" = "#002b33",            # Table background
+  # "table-color" = "#EEE8D5",         # Table text
+  # "table-striped-bg" = "#073642",    # Alternating row color
+  # "table-hover-bg" = "#094C5F",      # Hover row color
+  # 
+  # ------------------------------------------------------------------------------
   
   # === BORDERS & SHADOWS ===
   "border-radius" = "0.5rem",        # General corner rounding
