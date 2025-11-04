@@ -17,16 +17,16 @@ side: which kidney is the lesion loacated in
 - left
 - right
 
-location: described anatomical location of the individual lesion within the kidney. Location will be described in the report by  a combination of the following words: 
+location: described anatomical location of the individual lesion within the kidney. Location will be described in the report by  a combination of the following: 
 
-height one of: 
+height: one of: 
 - mid (sometimes referred to as interpolar) 
 - lower
 - upper 
-Laterality one of: 
-- medial
+Laterality: one of: 
+- medial or midline
 - lateral  
-AP one of: 
+anterior posterior: one of: 
 - midline
 - anterior
 - posterior
