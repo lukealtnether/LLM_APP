@@ -257,7 +257,6 @@ prompt_server <- function(input, output, session) {
     
     # ------------------------------------------------------------------------------
     
-  
     #summary of fp and fn based on na in the diff details
     fp_fn_summary <- diff_details %>%
       mutate(
@@ -439,7 +438,7 @@ prompt_server <- function(input, output, session) {
   output$example_check <- renderPrint({
     req(rv$test)
     idx <- example_index()
-    cat(paste0("Example ", idx, ":\n", rv$test$examples[idx]))
+    cat(paste0(idx, "/", nrow(rv$test), ":\n", rv$test$examples[idx]))
   })
   
   output$differences_df <- renderTable({

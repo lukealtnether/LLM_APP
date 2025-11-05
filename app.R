@@ -1,7 +1,7 @@
 required_packages <- c(
   "shiny", "jsonlite", "shinyjs", "jsonvalidate",
   "readxl", "writexl", "tidyverse", "ollamar",
-  "httr2", "arsenal", "shinyBS", "ggvenn", "bslib"
+  "httr2", "arsenal", "shinyBS", "ggvenn", "bslib", "DT"
 )
 
 # Function to install missing packages
@@ -38,6 +38,10 @@ source("PROMPT_ENGINEERING/server.R")
 # RANDOM SAMPLE app
 source("RANDOM_SAMPLE/ui.R")
 source("RANDOM_SAMPLE/server.R")
+
+# VALIDATION app
+source("VALIDATION/ui.R")
+source("VALIDATION/server.R")
 
 # LICENSE page
 source("LICENSE/ui.R")
@@ -289,6 +293,48 @@ ui <- navbarPage(
   .selectize-control.single .selectize-input.focus:after {
     border-top-color: #2AA198 !important;
   }
+  
+  /* === Dark theme fix for DT tables === */
+  table.dataTable {
+    background-color: #002b33 !important;   /* match card-bg */
+    color: #EEE8D5 !important;              /* match text color */
+    border-color: #2AA198 !important;       /* match border */
+  }
+
+  table.dataTable tbody tr {
+    background-color: #002b33 !important;
+  }
+
+  table.dataTable tbody tr:hover {
+    background-color: #094C5F !important;   /* match table-hover-bg */
+  }
+
+  table.dataTable thead th {
+    border-bottom: 1px solid #EEE8D5 !important;
+  }
+  table.dataTable tbody td, 
+  table.dataTable tbody th {
+    border: none !important;
+  }
+
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter,
+  .dataTables_wrapper .dataTables_info,
+  .dataTables_wrapper .dataTables_paginate {
+    color: #EEE8D5 !important;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #EEE8D5 !important;
+    background-color: #002b33 !important;
+    border: 1px solid #2AA198 !important;
+  }
+
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    color: #002b33 !important;
+    background-color: #2AA198 !important;
+  
+  
 ")),
 
   tabPanel("HOME", homepage_ui),
@@ -296,6 +342,7 @@ ui <- navbarPage(
   tabPanel("Enter Example", examples_ui),
   tabPanel("Engineer Prompt", prompt_ui),
   tabPanel("Create Database", random_ui),
+  tabPanel("Validate Sample", validation_ui),
   tabPanel("License", license_ui)
 )
 
@@ -305,6 +352,7 @@ server <- function(input, output, session) {
   examples_server(input, output, session)
   prompt_server(input, output, session)
   random_server(input, output, session)
+  validation_server(input, output, session)
   license_server(input, output, session)
 }
 
