@@ -7,7 +7,21 @@ side: which kidney is the tumor located in
 - R (right)
 - null if not mentioned
 
-location: described anatomical location of the individual lesion within the kidney. Location will be described in the report by  a combination of the following words: 
+location: described anatomical location of the individual lesion within the kidney. Location will be described in the report by  a combination of the following: 
+
+height: one of: 
+- mid (sometimes referred to as interpolar) 
+- lower
+- upper 
+Laterality: one of: 
+- medial or midline
+- lateral  
+anterior posterior: one of: 
+- midline
+- anterior
+- posterior
+
+- null if not mentioned
 
 height one of: 
 - mid (sometimes referred to as interpolar) 

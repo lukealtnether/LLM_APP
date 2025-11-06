@@ -31,11 +31,33 @@
               }
             ]
           },
-          "location": {
+          "location_height": {
             "anyOf": [
               {
                 "type": "string",
-                "pattern": "^(upper|mid|lower)? ?(medial|lateral)? ?(anterior|posterior|midline)?$"
+                "enum": ["lower","mid", "upper"]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location_laterality": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["medial","lateral"]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location_anterior_posterior": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": ["anterior","midline", "posterior"]
               },
               {
                 "type": "null"
