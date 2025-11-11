@@ -4,10 +4,6 @@ prompt_ui <- fluidPage(
   white-space: pre-wrap;
   word-wrap: break-word;
   }
-  .shiny-plot-output {
-    background-color: #001e24 !important;
-  }
-  
     ")),
   useShinyjs(),
   titlePanel("Prompt Engineering"),

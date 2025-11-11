@@ -26,7 +26,7 @@ validation_ui <- fluidPage(
       selectInput("val_id", NULL, choices = "", selected = ""),
       fluidRow(
         column(6, actionButton("adjudicate_llm", "Adjudicate", class = "btn btn-success", style = "width: 100%;")),
-        column(6, actionButton("validate_llm", "Validate", class = "btn btn-success", style = "width: 100%;"))
+        column(6, actionButton("validate_llm", "Validate", class = "btn btn-warning", style = "width: 100%;"))
       ),
       tags$hr(),
       # Differences Table

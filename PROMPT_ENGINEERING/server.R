@@ -324,9 +324,9 @@ prompt_server <- function(input, output, session) {
       left_join(tp_tn_summary, by = c("variable" = "var.x")) %>%
       rename(Variable = variable) %>%
       mutate(across(c(TP, TN, JA, JB), ~ ifelse(is.na(.), 0, .))) %>%
-      mutate(Accuracy = paste0(round(100*((TP + TN) / (nrow(llm_output))), 2),"%")) %>%
+      mutate(Accuracy = paste0(round(100*((TP + TN) / (comparison$frame.summary$n.shared[1])), 2),"%")) %>%
       mutate(Jaccard = round((TP/(TP + JA + JB)), 2)) %>%
-      select(-TP, -TN, -JA, -JB, -n)
+      select(TP, TN, JA, JB, -n)
     
     llm_obs <- llm_run_filtered %>%
       filter(!if_any(all_of(by_vars), is.na)) %>%
@@ -359,16 +359,16 @@ prompt_server <- function(input, output, session) {
   
     
     rv$venn_plot <- ggvenn(venn_list,
-      fill_color = c("#2AA198", "#002b33"),  # Use your theme colors (primary, danger)
+      fill_color = c("#009ee2", "#000d12"),  
       fill_alpha = 0.3,
       stroke_size = 1,
-      stroke_color = "#EEE8D5",
+      stroke_color = "#EEEEEE",
       set_name_size = 6,
       text_size = 8,
       show_percentage = FALSE,
       auto_scale = TRUE,
-      text_color = "#EEE8D5",
-      set_name_color = "#EEE8D5"
+      text_color = "#EEEEEE",
+      set_name_color = "#EEEEEE"
     )
 
     #display tables

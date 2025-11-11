@@ -47,21 +47,22 @@ source("VALIDATION/server.R")
 source("LICENSE/ui.R")
 source("LICENSE/server.R")
 
+options(bslib.cache = FALSE)
 
 # Define a Bootstrap 5 theme with full customization options
-app_theme <- bs_theme(
+dark_app_theme <- bs_theme(
   version = 5,                           # Bootstrap version (4 or 5)
   
   # === TYPOGRAPHY ===
   base_font = font_google("Fira Code"),  # Primary font used for all body text
-  
+
   # === FONT SIZES ===
   "font-size-base" = "0.875rem",           # Base font size (affects most text)
   "label-font-size" = "0.875rem",      # Input label size (this is the one!)
   "form-label-font-size" = "0.875rem", # Alternative for form labels
   "input-font-size" = "0.875rem",          # Text inside the input field itself
   "code-font-size" = "0.875rem",
-  
+
   # Heading sizes
   "h1-font-size" = "2.5rem",
   "h2-font-size" = "2rem",
@@ -69,111 +70,40 @@ app_theme <- bs_theme(
   "h4-font-size" = "1.25rem",
   "h5-font-size" = "1rem",
   "h6-font-size" = ".77rem",
-  
-  # ------------------------------------------------------------------------------
+
+
+  # --------------------------------------------------------------------------
 
   # === COLORS ===
-  bg = "#001e24",        # Background color (main page background)
-  fg = "#EEE8D5",        # Foreground color (default text color)
-  primary = "#2AA198",   # Primary brand color (buttons, links, highlights)
-  secondary = "#2AA198", # Secondary color (used for accent elements)
-  success = "#859900",   # Used for success messages and green buttons
+  bg = "#00141c",        # Background color (main page background)
+  fg = "#FFFFFF",        # Foreground color (default text color)
+  primary = "#009ee2",   # Primary brand color (buttons, links, highlights)
+  secondary = "#818181", # Secondary color (used for accent elements)
+  success = "#00ab4e",   # Used for success messages and green buttons
   info = "#268BD2",      # Used for informational messages or outlines
-  warning = "#d98816",   # Used for warning alerts and badges
-  danger = "#c92f2c",    # Used for errors, red buttons, or danger alerts
+  warning = "#009ee2",   # Used for warning alerts and badges
+  danger = "#e52334",    # Used for errors, red buttons, or danger alerts
 
   # === NAVBAR ===
-  "navbar-bg" = "#002b33",         # Navbar background color
-  "navbar-fg" = "#EEE8D5",         # Navbar text/icon color
-  "navbar-light-color" = "#EEE8D5",# Navbar link color (light mode)
-  "navbar-dark-color" = "#EEE8D5", # Navbar link color (dark mode)
-  "navbar-light-active-color" = "#2AA198",  # Active link color (light)
-  "navbar-dark-active-color" = "#2AA198",   # Active link color (dark)
+  "navbar-bg" = "#000d12",         # Navbar background color
+  "navbar-fg" = "#FFFFFF",         # Navbar text/icon color
+  "navbar-light-color" = "#FFFFFF",# Navbar link color (light mode)
+  "navbar-dark-color" = "#FFFFFF", # Navbar link color (dark mode)
+  "navbar-light-active-color" = "#009ee2",  # Active link color (light)
+  "navbar-dark-active-color" = "#009ee2",   # Active link color (dark)
 
   # === INPUTS & FORMS ===
-  "input-bg" = "#002b33",          # Input field background
-  "input-color" = "#EEE8D5",       # Input text color
-  "input-border-color" = "#2AA198",# Border around inputs
-  "input-placeholder-color" = "#93A1A1",  # Placeholder text color
-  "input-focus-border-color" = "#2AA198", # Border when focused
+  "input-bg" = "#0E1D24",          # Input field background
+  "input-color" = "#FFFFFF",       # Input text color
+  "input-border-color" = "#818181",# Border around inputs
+  "input-placeholder-color" = "#818181",  # Placeholder text color
+  "input-focus-border-color" = "#818181", # Border when focused
   "input-focus-box-shadow" = "0 0 0 0.2rem rgba(42,161,152,0.25)", # Glow when focused
-
-  # === BUTTONS ===
-  "btn-border-radius" = "0.4rem",     # Rounded corners on buttons
-  "btn-padding-y" = "0.4rem",         # Vertical padding
-  "btn-padding-x" = "0.9rem",         # Horizontal padding
-  "btn-font-weight" = "500",          # Slightly bolder button text
-  "btn-primary-bg" = "#2AA198",       # Primary button background
-  "btn-primary-color" = "#002b33",    # Primary button text color
-  "btn-hover-bg" = "#26978E",         # Button hover color
-
-  # === CARDS, PANELS, AND CONTAINERS ===
-  "card-bg" = "#002b33",             # Background of card components
-  "card-border-color" = "#2AA198",   # Card outline/border color
-  "card-color" = "#EEE8D5",          # Text color inside cards
-
-  # === TOOLTIP ===
-  "tooltip-bg" = "#586E75",          # Tooltip background color
-  "tooltip-color" = "#FDF6E3",       # Tooltip text color
-
+  
   # === TABLES ===
-  "table-bg" = "#002b33",            # Table background
-  "table-color" = "#EEE8D5",         # Table text
-  "table-striped-bg" = "#073642",    # Alternating row color
-  "table-hover-bg" = "#094C5F",      # Hover row color
+  "table-bg" = "#0E1D24",            # Table background
+  "table-color" = "#FFFFFF",         # Table text
 
-  # # UTSW--------------------------------------------------------------------------
-  # 
-  # # === COLORS ===
-  # bg = "#00355d",        # Background color (main page background)
-  # fg = "#FFFFFF",        # Foreground color (default text color)
-  # primary = "#009ee2",   # Primary brand color (buttons, links, highlights)
-  # secondary = "#009ee2", # Secondary color (used for accent elements)
-  # success = "#00ab4e",   # Used for success messages and green buttons
-  # info = "#268BD2",      # Used for informational messages or outlines
-  # warning = "#f26531",   # Used for warning alerts and badges
-  # danger = "#e52334",    # Used for errors, red buttons, or danger alerts
-  # 
-  # # === NAVBAR ===
-  # "navbar-bg" = "#004c97",         # Navbar background color
-  # "navbar-fg" = "#FFFFFF",         # Navbar text/icon color
-  # "navbar-light-color" = "#FFFFFF",# Navbar link color (light mode)
-  # "navbar-dark-color" = "#FFFFFF", # Navbar link color (dark mode)
-  # "navbar-light-active-color" = "#009ee2",  # Active link color (light)
-  # "navbar-dark-active-color" = "#009ee2",   # Active link color (dark)
-  # 
-  # # === INPUTS & FORMS ===
-  # "input-bg" = "#636466",          # Input field background
-  # "input-color" = "#FFFFFF",       # Input text color
-  # "input-border-color" = "#004c97",# Border around inputs
-  # "input-placeholder-color" = "#009ee2",  # Placeholder text color
-  # "input-focus-border-color" = "#009ee2", # Border when focused
-  # "input-focus-box-shadow" = "0 0 0 0.2rem rgba(42,161,152,0.25)", # Glow when focused
-  # 
-  # # === BUTTONS ===
-  # "btn-border-radius" = "0.4rem",     # Rounded corners on buttons
-  # "btn-padding-y" = "0.4rem",         # Vertical padding
-  # "btn-padding-x" = "0.9rem",         # Horizontal padding
-  # "btn-font-weight" = "500",          # Slightly bolder button text
-  # "btn-primary-bg" = "#2AA198",       # Primary button background
-  # "btn-primary-color" = "#002b33",    # Primary button text color
-  # "btn-hover-bg" = "#26978E",         # Button hover color
-  # 
-  # # === CARDS, PANELS, AND CONTAINERS ===
-  # "card-bg" = "#002b33",             # Background of card components
-  # "card-border-color" = "#2AA198",   # Card outline/border color
-  # "card-color" = "#EEE8D5",          # Text color inside cards
-  # 
-  # # === TOOLTIP ===
-  # "tooltip-bg" = "#586E75",          # Tooltip background color
-  # "tooltip-color" = "#FDF6E3",       # Tooltip text color
-  # 
-  # # === TABLES ===
-  # "table-bg" = "#002b33",            # Table background
-  # "table-color" = "#EEE8D5",         # Table text
-  # "table-striped-bg" = "#073642",    # Alternating row color
-  # "table-hover-bg" = "#094C5F",      # Hover row color
-  # 
   # ------------------------------------------------------------------------------
   
   # === BORDERS & SHADOWS ===
@@ -186,157 +116,110 @@ app_theme <- bs_theme(
 
 ui <- navbarPage(
   title = "",
-  theme = app_theme,   
+  theme = dark_app_theme,
+  
   
   tags$style(HTML("
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    z-index: 1000;
-    margin-bottom: 0;
-  }
-  
-  .tab-content {
-    padding-top: 70px;
-    height: calc(100vh - 70px);
-    overflow-y: auto;
-  }
-  
-  .tab-pane {
-    height: 100%;
-    padding: 15px;
-  }
-  
-  .tab-pane img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-  
-  .tab-pane figure {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  .tab-pane figcaption {
-    font-style: italic;
-    margin-top: 8px;
-  }
-  
-  
-  
   /* === Selectize Inputs === */
   .selectize-input,
   .selectize-control.single .selectize-input {
-    background-color: #002b33 !important;
-    color: #EEE8D5 !important;
-    border-color: #2AA198 !important;
+    background-color: #0E1D24 !important;
+    color: #FFFFFF !important;
+    border-color: #818181 !important;
   }
-
-  .selectize-input.focus {
-    border-color: #2AA198 !important;
-    box-shadow: 0 0 0 0.2rem rgba(42,161,152,0.25) !important;
-  }
-
+  
+  
   /* === Selectize Dropdown === */
-  .selectize-dropdown,
+    .selectize-dropdown,
   .selectize-dropdown-content {
-    background-color: #002b33 !important;
-    background: #002b33 !important;
-    color: #EEE8D5 !important;
-    border: 1px solid #2AA198 !important;
+    background-color: #0E1D24 !important;
+      background: #0E1D24 !important;
+      color: #FFFFFF !important;
+      border: 1px solid #818181 !important;
     opacity: 1 !important;
   }
-
+  
   .selectize-dropdown .option {
-    background-color: #002b33 !important;
-    background: #002b33 !important;
-    color: #EEE8D5 !important;
-    opacity: 1 !important; 
+    background-color: #0E1D24 !important;
+      background: #0E1D24 !important;
+      color: #FFFFFF !important;
+      opacity: 1 !important; 
     padding: 8px 12px;
   }
-
+  
   .selectize-dropdown .option:hover,
   .selectize-dropdown .option.active {
-    background-color: #2AA198 !important;
-    background: #2AA198 !important;
-    color: #002b33 !important;
-    opacity: 1 !important; 
+    background-color: #818181 !important;
+      background: #818181 !important;
+      color: #0E1D24 !important;
+      opacity: 1 !important; 
   }
   
   .selectize-dropdown .option.selected {
-    background-color: #073642 !important;
-    background: #073642 !important;
-    color: #EEE8D5 !important;
+    background-color: ##00141 !important;
+      background: #00141 !important;
+      color: #FFFFFF !important;
   }
   
   /* === Selectize Dropdown Arrow === */
-  .selectize-control.single .selectize-input:after {
-    border-color: #EEE8D5 transparent transparent transparent !important;
-    border-top-color: #EEE8D5 !important;
-  }
+    .selectize-control.single .selectize-input:after {
+      border-color: #FFFFFF transparent transparent transparent !important;
+        border-top-color: #FFFFFF !important;
+    }
   
   .selectize-control.single .selectize-input.dropdown-active:after {
-    border-color: transparent transparent #EEE8D5 transparent !important;
-    border-bottom-color: #EEE8D5 !important;
+    border-color: transparent transparent #FFFFFF transparent !important;
+    border-bottom-color: #FFFFFF !important;
   }
   
   /* For when input is focused */
-  .selectize-control.single .selectize-input.focus:after {
-    border-top-color: #2AA198 !important;
-  }
+    .selectize-control.single .selectize-input.focus:after {
+      border-top-color: #818181 !important;
+    }
   
   /* === Dark theme fix for DT tables === */
-  table.dataTable {
-    background-color: #002b33 !important;   /* match card-bg */
-    color: #EEE8D5 !important;              /* match text color */
-    border-color: #2AA198 !important;       /* match border */
-  }
-
+    table.dataTable {
+      background-color: #0E1D24 !important;   /* match card-bg */
+        color: #FFFFFF !important;              /* match text color */
+        border-color: #818181 !important;       /* match border */
+    }
+  
   table.dataTable tbody tr {
-    background-color: #002b33 !important;
+    background-color: #0E1D24 !important;
   }
-
+  
   table.dataTable tbody tr:hover {
-    background-color: #094C5F !important;   /* match table-hover-bg */
+    background-color: #00141c !important;   /* match table-hover-bg */
   }
-
+  
   table.dataTable thead th {
-    border-bottom: 1px solid #EEE8D5 !important;
+    border-bottom: 1px solid #FFFFFF !important;
   }
   table.dataTable tbody td, 
   table.dataTable tbody th {
     border: none !important;
   }
-
+  
   .dataTables_wrapper .dataTables_length,
   .dataTables_wrapper .dataTables_filter,
   .dataTables_wrapper .dataTables_info,
   .dataTables_wrapper .dataTables_paginate {
-    color: #EEE8D5 !important;
+    color: #FFFFFF !important;
   }
-
+  
   .dataTables_wrapper .dataTables_paginate .paginate_button {
-    color: #EEE8D5 !important;
-    background-color: #002b33 !important;
-    border: 1px solid #2AA198 !important;
+    color: #FFFFFF !important;
+      background-color: #0E1D24 !important;
+      border: 1px solid #818181 !important;
   }
-
+  
   .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-    color: #002b33 !important;
-    background-color: #2AA198 !important;
+    color: #0E1D24 !important;
+      background-color: #818181 !important;
+      
+      
+      ")),
   
-  
-")),
-
   tabPanel("HOME", homepage_ui),
   tabPanel("Create Schema", json_ui),
   tabPanel("Enter Example", examples_ui),
