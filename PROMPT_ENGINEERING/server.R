@@ -325,9 +325,9 @@ prompt_server <- function(input, output, session) {
       left_join(tp_tn_summary, by = c("variable" = "var.x")) %>%
       rename(Variable = variable) %>%
       mutate(across(c(TP, TN, JA, JB), ~ ifelse(is.na(.), 0, .))) %>%
-      mutate(Accuracy = paste0(round(100*((TP + TN) / (nrow(llm_output))), 2),"%")) %>%
+      mutate(Accuracy = paste0(round(100*((TP + TN) / (comparison$frame.summary$n.shared[1])), 2),"%")) %>%
       mutate(Jaccard = round((TP/(TP + JA + JB)), 2)) %>%
-      select(-TP, -TN, -JA, -JB, -n)
+      select(TP, TN, JA, JB, -n)
     
     llm_obs <- llm_run_filtered %>%
       filter(!if_any(all_of(by_vars), is.na)) %>%
