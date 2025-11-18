@@ -336,7 +336,6 @@ prompt_server <- function(input, output, session) {
       filter(!if_any(all_of(by_vars), is.na)) %>%
       nrow()
 
-   
     # Exclude first and average time
     time_col <- paste0(input$llm_model, "_time")
     avg_time <- paste0(round(mean(test[[time_col]][-1], na.rm = TRUE), 2), "s")
