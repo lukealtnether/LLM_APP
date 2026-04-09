@@ -40,9 +40,9 @@ validation_ui <- fluidPage(
       br(),
       # Reader data previews
       h4("Reader 1"),
-      tableOutput("reader_1_output"),
+      DTOutput("reader_1_output"),
       h4("Reader 2"),
-      tableOutput("reader_2_output"),
+      DTOutput("reader_2_output"),
       tags$hr(),
       # Scoring Cutoffs
       h4("Scoring Cutoffs"),
