@@ -19,11 +19,22 @@ validation_server <- function(input, output, session) {
   # ---- Reader 1 Upload ----
   observeEvent(input$reader_1_xlsx, {
     req(input$reader_1_xlsx)
+    
     reader_1 <- read_excel(input$reader_1_xlsx$datapath, col_names = TRUE)
+    
+    # STORE SCHEMA FROM _app COLUMNS
+    app_cols <- reader_1 %>%
+      select(ends_with("_app")) %>%
+      rename_with(~ sub("_app$", "", .x))
+    
+    rv$schema <- sapply(app_cols, class)
+    
+    # get reader 1 data
     rv$df1 <- reader_1 %>%
       select(examples, ends_with("_app")) %>%
       rename_with(~ sub("_app$", "", .x), ends_with("_app")) %>%
       nest(data = -examples)
+    
     first_nested <- rv$df1$data[[1]]
     rv$val_colnames <- names(first_nested)
   })
@@ -238,26 +249,65 @@ validation_server <- function(input, output, session) {
     # Reference the current gt dataframe
     gt_df <- rv$combined_df$gt[[idx]]
     
-    # Update the edited cell
-    gt_df[info$row, info$col + 1] <- info$value
+    # Get the column name being edited
+    col_name <- colnames(gt_df)[info$col + 1]
     
-    # Save it back to reactiveValues
+    # Original column for type reference
+    original_col <- gt_df[[col_name]]
+    
+    # Coerce value to match original type
+    new_val <- info$value
+    if (is.numeric(original_col)) {
+      new_val <- suppressWarnings(as.numeric(new_val))
+    } else if (is.logical(original_col)) {
+      new_val <- as.logical(new_val)
+    } else {
+      new_val <- as.character(new_val)
+    }
+    
+    # Update the edited cell
+    gt_df[[col_name]][info$row] <- new_val
+    
+    # Save back to reactiveValues
     rv$combined_df$gt[[idx]] <- gt_df
   })
   
   
   
   # ---- Reader data preview ----
-  output$reader_1_output <- renderTable({
+  output$reader_1_output <- renderDT({
     req(rv$combined_df)
     idx <- rv$validation_index
-    rv$combined_df$data.x[[idx]]
+    datatable(
+      rv$combined_df$data.x[[idx]],
+      rownames = FALSE,
+      options = list(
+        dom = "t",
+        ordering = FALSE,
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE,
+        scrollX = TRUE
+      )
+    )
   })
   
-  output$reader_2_output <- renderTable({
+  output$reader_2_output <- renderDT({
     req(rv$combined_df)
     idx <- rv$validation_index
-    rv$combined_df$data.y[[idx]]
+    
+    datatable(
+      rv$combined_df$data.y[[idx]],
+      rownames = FALSE,
+      options = list(
+        dom = "t",
+        ordering = FALSE,
+        searching = FALSE,
+        paging = FALSE,
+        info = FALSE,
+        scrollX = TRUE
+      )
+    )
   })
   
   output$download_ground_truth <- downloadHandler(
@@ -270,18 +320,55 @@ validation_server <- function(input, output, session) {
       req(rv$combined_df)
       req(input$reader_1_xlsx)
       
-      # Read Reader 1 and get non-_app columns
+      # Read Reader 1 and get non-_app columns (metadata)
       reader_1 <- read_excel(input$reader_1_xlsx$datapath, col_names = TRUE) %>%
-        select(-ends_with("_app"), -ends_with("latest_time")) %>%   # keep only metadata columns
-        distinct()                       # remove duplicate rows
+        select(-ends_with("_app"), -ends_with("latest_time")) %>%
+        distinct()
       
       # Prepare GT output
       rv$combined_df %>%
-        select(examples, gt) %>%                             # keep examples and gt
-        mutate(gt = map(gt, ~ setNames(.x, paste0(names(.x), "_app")))) %>%  # rename nested gt columns
-        unnest(gt) %>%                                       # flatten nested gt
-        left_join(reader_1, by = "examples") %>%            # add back metadata
-        writexl::write_xlsx(path = file)                    # save to Excel
+        select(examples, gt) %>%
+        
+
+        mutate(
+          gt = map(gt, ~ {
+            df <- .x
+            
+            # 1. Flatten list columns
+            df[] <- lapply(df, function(col) {
+              if (is.list(col)) unlist(col, recursive = FALSE, use.names = FALSE) else col
+            })
+            
+            # 2. Ensure ALL schema columns exist
+            for (col_name in names(rv$schema)) {
+              if (!(col_name %in% names(df))) {
+                df[[col_name]] <- NA
+              }
+            }
+            
+            # 3. Enforce schema types
+            for (col_name in names(rv$schema)) {
+              if (rv$schema[[col_name]] %in% c("numeric", "double")) {
+                df[[col_name]] <- suppressWarnings(as.numeric(df[[col_name]]))
+              } else if (rv$schema[[col_name]] %in% c("logical")) {
+                df[[col_name]] <- as.logical(df[[col_name]])
+              } else {
+                df[[col_name]] <- as.character(df[[col_name]])
+              }
+            }
+            
+            # 4. Reorder columns to match schema (optional but clean)
+            df <- df[, names(rv$schema), drop = FALSE]
+            
+            as.data.frame(df)
+          }),
+           # Rename AFTER coercion
+          gt = map(gt, ~ setNames(.x, paste0(names(.x), "_app")))) %>%
+        unnest(gt) %>%
+        # Add back metadata
+        left_join(reader_1, by = "examples") %>%
+        # Save to Excel
+        writexl::write_xlsx(path = file)
     }
   )
 
