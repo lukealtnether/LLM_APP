@@ -3,7 +3,7 @@ homepage_ui <-  fluidPage(
       
       /* Make images responsive */
       img {
-        max-width: 100%;
+        max-width: 50%;
         height: auto;
         display: block;
         margin: 0 auto;
